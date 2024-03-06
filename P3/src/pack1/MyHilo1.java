@@ -1,4 +1,4 @@
-package pack;
+package pack1;
 
 import java.lang.Thread;
 import java.util.concurrent.Semaphore;

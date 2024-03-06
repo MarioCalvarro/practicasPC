@@ -1,4 +1,4 @@
-package pack;
+package pack1;
 
 public class Entero {
 	private volatile int value;
