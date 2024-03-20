@@ -1,9 +1,10 @@
-package pack3;
+package pack2;
 
 public class App {
 	public static void main(String[] args) {
-		int num_threads = 3, num_productos = 5;
-		AlmacenN alm = new AlmacenN(num_productos);
+		int num_threads = 100, num_productos = 100;
+		MonitorRW m = new MonitorRWSyn();
+		Almacen alm = new Almacen(num_productos, m);
 		Thread[] escritores = new Thread[num_threads];
 		Thread[] lectores = new Thread[num_threads];
 		for (int i = 0; i < num_threads; i++) {
