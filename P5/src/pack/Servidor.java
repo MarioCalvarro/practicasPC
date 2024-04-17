@@ -1,29 +1,43 @@
 package pack;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Servidor {
     private ServerSocket ss;
-    private List<HiloCliente> clientes;
+    private List<HiloSocket> clientes;
+
+    public static void main(String[] args) {
+        Servidor s = null;
+        try {
+            s = new Servidor();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        s.start();
+        s.shutdown();
+    }
 
     public Servidor() throws IOException {
         ss = new ServerSocket(1234);
-        clientes = new ArrayList<HiloCliente>();
+        clientes = new ArrayList<HiloSocket>();
     }
 
     public void start() {
-        while (!ss.isClosed()) {
+        int num = 0;
+        while (num < 5) {
             try {
                 Socket cs = ss.accept();
-                HiloCliente hc = new HiloCliente(cs);
+                HiloSocket hc = new HiloSocket(cs);
                 hc.start();
                 clientes.add(hc);
+                num += 1;
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -32,7 +46,7 @@ public class Servidor {
     }
 
     public void shutdown() {
-        for (HiloCliente hc : clientes) {
+        for (HiloSocket hc : clientes) {
             try {
                 hc.join();
             } catch (InterruptedException e) {
@@ -47,29 +61,45 @@ public class Servidor {
         }
     }
 
-    private static class HiloCliente extends Thread {
+    private static class HiloSocket extends Thread {
         private Socket cs;
+        private ObjectInputStream fIn;
+        private ObjectOutputStream fOut;
 
-        public HiloCliente(Socket cs) {
+        public HiloSocket(Socket cs) {
             this.cs = cs;
+            try {
+                fIn = new ObjectInputStream(cs.getInputStream());
+                fOut = new ObjectOutputStream(cs.getOutputStream());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
         public void run() {
-            try(Scanner sc = new Scanner(cs.getInputStream());
-                PrintWriter wr = new PrintWriter(cs.getOutputStream(), true)) 
-            {
-                while (sc.hasNextLine()) {
-                    String rq = sc.nextLine();
-                    System.out.println("El servidor ha recibido del cliente " + cs.getInetAddress().getHostName() + " el mensaje " + rq);
-                    wr.println("Mensaje del servidor");
+            try {
+                //Mensaje de conexión
+                Mensaje msj = (Mensaje) fIn.readObject();
+                if (msj.getTipo() != 0) {
+                    throw new Exception("El cliente no ha enviado un mensaje de conexión.");
                 }
+                System.out.println("El servidor ha recibido " + msj.getContenido());
+
+                //Confirmación de conexión
+                fOut.writeObject(new Mensaje(1, "Bienvenido cliente. El servidor ha recibido " + msj.getContenido()));
+
+                //Cierre de conexión
+                msj = (Mensaje) fIn.readObject();
+                if (msj.getTipo() != 2) {
+                    throw new Exception("El cliente no ha enviado un mensaje de cierre de conexión.");
+                }
+                System.out.println("El servidor ha recibido " + msj.getContenido());
 
                 cs.close();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
     }
 }
