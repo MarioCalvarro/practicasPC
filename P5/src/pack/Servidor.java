@@ -25,7 +25,7 @@ public class Servidor {
     }
 
     public Servidor() throws IOException {
-        ss = new ServerSocket(1234);
+        ss = new ServerSocket(2024);
         clientes = new ArrayList<HiloSocket>();
     }
 
@@ -84,17 +84,18 @@ public class Servidor {
                 if (msj.getTipo() != 0) {
                     throw new Exception("El cliente no ha enviado un mensaje de conexión.");
                 }
-                System.out.println("El servidor ha recibido " + msj.getContenido());
+                System.out.println("El servidor ha recibido: " + msj.getContenido());
 
                 //Confirmación de conexión
-                fOut.writeObject(new Mensaje(1, "Bienvenido cliente. El servidor ha recibido " + msj.getContenido()));
+                fOut.writeObject(new Mensaje(1, "Bienvenido cliente. El servidor ha recibido: " + msj.getContenido()));
+                fOut.flush();
 
                 //Cierre de conexión
-                msj = (Mensaje) fIn.readObject();
-                if (msj.getTipo() != 2) {
+                Mensaje msj2 = (Mensaje) fIn.readObject();
+                if (msj2.getTipo() != 2) {
                     throw new Exception("El cliente no ha enviado un mensaje de cierre de conexión.");
                 }
-                System.out.println("El servidor ha recibido " + msj.getContenido());
+                System.out.println("El servidor ha recibido: " + msj2.getContenido());
 
                 cs.close();
             } catch (Exception e) {

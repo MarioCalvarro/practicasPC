@@ -29,7 +29,8 @@ public class Cliente {
 
     public void start() {
         try {
-            Socket cs = new Socket("localhost", 1234);
+            Socket cs = new Socket("localhost", 2024);
+            System.out.println("Conectado el cliente " + nombre);
             HiloSocket hc = new HiloSocket(nombre, cs);
             hc.start();
             clientes.add(hc);
@@ -56,8 +57,8 @@ public class Cliente {
             this.nombre = nombre;
             this.cs = cs;
             try {
-                fIn = new ObjectInputStream(cs.getInputStream());
                 fOut = new ObjectOutputStream(cs.getOutputStream());
+                fIn = new ObjectInputStream(cs.getInputStream());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -68,16 +69,18 @@ public class Cliente {
             try {
                 //Mensaje de conexión
                 fOut.writeObject(new Mensaje(0, "Hola servidor. El cliente " + nombre + " desea conectarse."));
+                fOut.flush();
 
                 //Confirmación de conexión
                 Mensaje msj = (Mensaje) fIn.readObject();
                 if (msj.getTipo() != 1) {
                     throw new Exception("El servidor no ha enviado un mensaje de confirmación de conexión.");
                 }
-                System.out.println("El cliente ha recibido " + msj.getContenido());
+                System.out.println("El cliente ha recibido: " + msj.getContenido());
 
                 //Cierre de conexión
                 fOut.writeObject(new Mensaje(2, "Adiós servidor. El cliente " + nombre + " se desconecta."));
+                fOut.flush();
 
                 cs.close();
             } catch (Exception e) {

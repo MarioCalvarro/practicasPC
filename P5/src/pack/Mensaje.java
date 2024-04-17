@@ -1,6 +1,8 @@
 package pack;
 
-public class Mensaje {
+import java.io.Serializable;
+
+public class Mensaje implements Serializable {
     //0: Conexión
     //1: Confirmación conexión
     //2: Cierre conexión
