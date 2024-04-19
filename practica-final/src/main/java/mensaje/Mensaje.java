@@ -1,7 +1,7 @@
 package mensaje;
 
 public abstract class Mensaje {
-    private TipoMensaje msj;
+    protected TipoMensaje msj;
 
     public TipoMensaje getTipo() {
         return msj;
