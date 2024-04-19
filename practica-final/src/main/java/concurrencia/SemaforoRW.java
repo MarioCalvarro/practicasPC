@@ -2,7 +2,7 @@ package concurrencia;
 
 import java.util.concurrent.Semaphore;
 
-public class SemaforoRW implements Semaforo {
+public class SemaforoRW implements ControlAcceso {
 	private Semaphore e, r, w;
     private int nw, nr, dr, dw;
 
