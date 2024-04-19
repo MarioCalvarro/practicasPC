@@ -40,5 +40,4 @@ public class LockBakery implements Lock {
 		turn[i].setValue(-1);
 	}
 
-
 }
