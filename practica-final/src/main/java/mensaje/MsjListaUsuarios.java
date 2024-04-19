@@ -1,5 +1,7 @@
 package mensaje;
 
+import servidor.logic.ListaUsuarios;
+
 public class MsjListaUsuarios extends Mensaje {
     private ListaUsuarios contenido;
 
