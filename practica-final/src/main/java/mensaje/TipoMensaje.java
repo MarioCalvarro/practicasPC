@@ -20,7 +20,7 @@ public enum TipoMensaje {
     //No envía nada
     MSJ_INICIO_EMISION_FICHERO,
 
-    //No envía nada
+    //Envía nombre de fichero (String)
     MSJ_FIN_EMISION_FICHERO,
     //El fichero se enviará por tramos del tamaño de cierto buffer. Los
     //dos anteriores mensajes marcaran el comienzo y final de esta
