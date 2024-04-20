@@ -8,7 +8,6 @@ import java.net.Socket;
 import mensaje.*;
 import servidor.ui.ServerLogger;
 
-//TODO: Log
 class OyenteCliente extends Thread {
     private BaseDatos baseDatos;
     private TablaFlujos flujos;

@@ -17,7 +17,7 @@ public class ServerLogger {
             SimpleFormatter formatter = new SimpleFormatter();
             fileHandler.setFormatter(formatter);
         } catch (IOException e) {
-            //TODO: Error
+            System.err.println("Error al iniciar el 'logger'. No se ha podido acceder al fichero de log.");
             e.printStackTrace();
         }
     }
@@ -25,21 +25,18 @@ public class ServerLogger {
     public static void log(String message) {
         synchronized (logger) {
             logger.info(message);
-            System.out.println(message);
         }
     }
 
     public static void logWarning(String message) {
         synchronized (logger) {
             logger.log(Level.WARNING, message);
-            System.out.println(message);
         }
     }
 
     public static void logError(String message) {
         synchronized (logger) {
             logger.log(Level.SEVERE, message);
-            System.out.println(message);
         }
     }
 }
