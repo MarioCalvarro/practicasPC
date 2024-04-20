@@ -15,9 +15,11 @@ public class BaseDatos {
         controlador = new SemaforoRW();
     }
 
-    public void cambioUsuario(String id, Usuario user) {
+    public void conexionUsuario(Usuario user) {
         controlador.request_write();
+        String id = user.getId();
         datos.put(id, user);
+        datos.get(id).conectar();
         controlador.release_write();
     }
 
@@ -27,10 +29,9 @@ public class BaseDatos {
         controlador.release_write();
     }
 
-    public Usuario getUsuario(String id) {
+    public void enviarUsuarios(String id, TablaFlujos tFlujos) {
         controlador.request_read();
-        Usuario res = datos.get(id);
+        //TODO: Hacer
         controlador.release_read();
-        return res;
     }
 }

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import concurrencia.ControlAcceso;
+import concurrencia.Entero;
 import concurrencia.Lock;
 import concurrencia.MonitorRW;
 
@@ -16,23 +17,19 @@ public class TablaFlujos {
     private Map<String, ObjectInputStream> datosIn;
     private Map<String, ObjectOutputStream> datosOut;
     private Map<String, Integer> tablaNumLock;
-    //TODO: Cambiar esto del lock
-    private volatile int auxLock;
 
     public TablaFlujos() {
         datosIn = new HashMap<>(); 
         datosOut = new HashMap<>(); 
         controladorOut = new MonitorRW();
-        auxLock = 0;
     }
 
-    public void nuevoHilo(String id, ObjectInputStream in, ObjectOutputStream out) {
+    public void nuevoHilo(int numThread, String id, ObjectInputStream in, ObjectOutputStream out) {
         controladorOut.request_write();
-        controladorIn.takeLock(auxLock);
+        controladorIn.takeLock(numThread);
         datosIn.put(id, in);
         datosOut.put(id, out);
-        controladorIn.realeaseLock(auxLock);
-        auxLock += 1;       //TODO: Cuidado máximo nº usuarios
+        controladorIn.realeaseLock(numThread);
         controladorOut.release_write();
     }
 
@@ -49,9 +46,8 @@ public class TablaFlujos {
         controladorOut.release_write();
     }
 
-    public Object leer(String id) throws ClassNotFoundException, IOException {
-        //TODO: Cambiar lo del número
-        controladorIn.takeLock(tablaNumLock.get(id));
+    public Object leer(int numThread, String id) throws ClassNotFoundException, IOException {
+        controladorIn.takeLock(numThread);
         Object res;
         try {
             res = datosIn.get(id).readObject();
@@ -60,7 +56,7 @@ public class TablaFlujos {
             controladorIn.realeaseLock(tablaNumLock.get(id));
             throw e;
         }
-        controladorIn.realeaseLock(tablaNumLock.get(id));
+        controladorIn.realeaseLock(numThread);
         return res;
     }
 }

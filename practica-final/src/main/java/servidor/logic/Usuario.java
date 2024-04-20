@@ -7,10 +7,10 @@ public class Usuario {
     private List<String> ficheros;
     private boolean conectado;
 
-    public Usuario(String id, List<String> ficheros, boolean conectado) {
+    public Usuario(String id, List<String> ficheros) {
         this.id = id;
         this.ficheros = ficheros;
-        this.conectado = conectado;
+        this.conectado = false;     //Por defecto no conectado
     }
 
     public String getId() {
@@ -23,5 +23,9 @@ public class Usuario {
 
     public boolean getConectado() {
         return conectado;
+    }
+
+    public void conectar() {
+        conectado = true;
     }
 }

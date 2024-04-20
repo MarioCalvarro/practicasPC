@@ -83,6 +83,7 @@ public class Servidor {
                 System.out.print("To exit type 'exit': ");
                 String input = scanner.nextLine();
                 if (input.contains(EXIT_WORD)) {
+                    //TODO: Esto no funciona correctamente
                     acceptingConnections = false;
                     scanner.close();
                 }
