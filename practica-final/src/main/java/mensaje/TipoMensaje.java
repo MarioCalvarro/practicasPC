@@ -29,7 +29,7 @@ public enum TipoMensaje {
     //dos anteriores mensajes marcaran el comienzo y final de esta
     //transferencia
 
-    //No envía nada
+    //Envía el nombre del fichero preparado, su direccion IP y el puerto (String)
     MSJ_PREPARADO_CS,       //CS: Cliente-Servidor
 
     //Envía la dirección IP y el puerto del emisor (String)

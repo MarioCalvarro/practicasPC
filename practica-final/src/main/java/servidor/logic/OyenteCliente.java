@@ -79,9 +79,9 @@ class OyenteCliente extends Thread {
                     String nombreFichero = ((MsjString) msj).getContenido();
                     solicitarFichero(nombreFichero);
                     break;
-                case MSJ_PREPARADO_SC:
+                case MSJ_PREPARADO_CS:
                     String ficheroIpPort = ((MsjString) msj).getContenido();
-
+                    enviarPreparadoSC();
                     String[] palabras = ficheroIpPort.split(" ");
                     break;
                 case MSJ_FIN_EMISION_FICHERO:
