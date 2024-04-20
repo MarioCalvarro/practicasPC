@@ -28,6 +28,16 @@ class OyenteCliente extends Thread {
         }
     }
 
+    @Override
+    public void run() {
+        try {
+            establecerConexion();
+            iniciarEscucha();
+        } catch (Exception e) {
+            return;
+        }
+    }
+
     private void establecerConexion() {
         MsjUsuario msj;
         try {
@@ -36,7 +46,8 @@ class OyenteCliente extends Thread {
                 //TODO: Error
                 throw new Exception();
             }
-            this.id = msj.getContenido();
+            Usuario user = msj.getContenido();
+            this.id = user.getId();
             //TODO: Logger
             System.out.println("Solicitud de conexión de: " + this.id);
             System.out.println("Enviando confirmación de conexión");
@@ -44,20 +55,50 @@ class OyenteCliente extends Thread {
 
             //Actualizamos las tablas
             this.flujos.nuevoHilo(numThread, id, fIn, fOut);
-            //TODO: Actualizar usuario
-            this.baseDatos.conexionUsuario();
+            this.baseDatos.conexionUsuario(user);
         } catch (Exception e) {
             //TODO: Mejorar salida
             interrupt();
         }
     }
 
-    @Override
-    public void run() {
-        try {
-            establecerConexion();
-        } catch (Exception e) {
-            return;
+    private void iniciarEscucha() throws ClassNotFoundException, IOException {
+        Mensaje msj;
+        boolean conectados = true;
+        while (conectados) {
+            msj = (Mensaje) fIn.readObject();
+            switch(msj.getTipo()) {
+                case MSJ_LU:
+                    //Enviar la lista de usuarios
+                    baseDatos.enviarUsuarios(id, flujos);
+                    break;
+                case MSJ_PEDIR_FICHERO:
+                    String nombreFichero = ((MsjString) msj).getContenido();
+                    iniciarConexionP2P(nombreFichero);
+                    break;
+                case MSJ_FIN_EMISION_FICHERO:
+                    actualizarBaseDatos();
+                    break;
+                case MSJ_PREPARADO_SC:
+                    //TODO
+                    break;
+                case MSJ_CERRAR_CONEXION:
+                    //TODO
+                    break;
+                default:
+                    //TODO: Log
+                    interrupt();
+                    break;
+            }
         }
     }
+
+    private void iniciarConexionP2P(String nombreFichero) {
+
+    }
+
+    private void actualizarBaseDatos() {
+
+    }
+
 }

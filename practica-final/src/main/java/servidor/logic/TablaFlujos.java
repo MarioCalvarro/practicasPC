@@ -33,7 +33,7 @@ public class TablaFlujos {
         controladorOut.release_write();
     }
 
-    public void escribir(String id, Object obj) throws IOException {
+    public void escribir(String id, Object obj) {
         controladorOut.request_write();
         try {
             datosOut.get(id).writeObject(obj);

@@ -1,13 +1,14 @@
 package servidor.logic;
 
-import java.util.List;
+import java.io.Serializable;
+import java.util.Set;
 
-public class Usuario {
+public class Usuario implements Serializable {
     private String id;
-    private List<String> ficheros;
+    private Set<String> ficheros;
     private boolean conectado;
 
-    public Usuario(String id, List<String> ficheros) {
+    public Usuario(String id, Set<String> ficheros) {
         this.id = id;
         this.ficheros = ficheros;
         this.conectado = false;     //Por defecto no conectado
@@ -17,7 +18,7 @@ public class Usuario {
         return id;
     }
 
-    public List<String> getFicheros() {
+    public Set<String> getFicheros() {
         return ficheros;
     }
 

@@ -1,10 +1,13 @@
 package servidor.logic;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import concurrencia.ControlAcceso;
 import concurrencia.SemaforoRW;
+import mensaje.MsjListaUsuarios;
+import mensaje.TipoMensaje;
 
 public class BaseDatos {
     private Map<String, Usuario> datos;
@@ -29,9 +32,24 @@ public class BaseDatos {
         controlador.release_write();
     }
 
-    public void enviarUsuarios(String id, TablaFlujos tFlujos) {
+    public void enviarUsuarios(String id, TablaFlujos flujos) {
         controlador.request_read();
-        //TODO: Hacer
+        try {
+            flujos.escribir(id, new MsjListaUsuarios(TipoMensaje.MSJ_CONF_LU, new ListaUsuarios(datos)));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         controlador.release_read();
+    }
+
+    public String getUsuarioConFichero(String idFichero) {
+        String nombreUser = "";
+        controlador.request_read();
+        for (Usuario user : datos.values()) {
+            // user.getFicheros().
+        }
+        controlador.release_read();
+        return nombreUser;
     }
 }
