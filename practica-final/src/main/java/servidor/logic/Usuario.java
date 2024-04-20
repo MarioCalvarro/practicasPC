@@ -29,4 +29,12 @@ public class Usuario implements Serializable {
     public void conectar() {
         conectado = true;
     }
+    
+    public void desconectar() {
+        conectado = false;
+    }
+
+    public void nuevoFichero(String fichero) {
+        ficheros.add(fichero);
+    }
 }

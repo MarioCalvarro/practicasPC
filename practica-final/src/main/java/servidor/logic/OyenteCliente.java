@@ -7,6 +7,7 @@ import java.net.Socket;
 
 import mensaje.*;
 
+//TODO: Log
 class OyenteCliente extends Thread {
     private BaseDatos baseDatos;
     private TablaFlujos flujos;
@@ -85,13 +86,13 @@ class OyenteCliente extends Thread {
                     enviarPreparadoSC(ficheroIpPort);
                     break;
                 case MSJ_FIN_EMISION_FICHERO:
-                    actualizarBaseDatos();
+                    String fichero = ((MsjString) msj).getContenido();
+                    baseDatos.nuevoFicheroEnUser(this.id, fichero);
                     break;
                 case MSJ_CERRAR_CONEXION:
-                    //TODO
+                    baseDatos.desconexionUsuario(this.id);
                     break;
                 default:
-                    //TODO: Log
                     interrupt();
                     break;
             }
@@ -115,9 +116,4 @@ class OyenteCliente extends Thread {
         String ipPuerto = separado[1] + separado[2];
         flujos.escribir(nombreReceptor, new MsjString(TipoMensaje.MSJ_PREPARADO_SC, ipPuerto));
     }
-
-    private void actualizarBaseDatos() {
-
-    }
-
 }

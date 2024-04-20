@@ -26,6 +26,18 @@ public class BaseDatos {
         controlador.release_write();
     }
 
+    public void desconexionUsuario(String id) {
+        controlador.request_write();
+        datos.get(id).desconectar();
+        controlador.release_write();
+    }
+
+    public void nuevoFicheroEnUser(String idUser, String fichero) {
+        controlador.request_write();
+        datos.get(idUser).nuevoFichero(fichero);
+        controlador.release_write();
+    }
+
     public void eliminarUsuario(String id, Usuario user) {
         controlador.request_write();
         datos.remove(id);
@@ -36,7 +48,7 @@ public class BaseDatos {
         controlador.request_read();
         try {
             flujos.escribir(id, new MsjListaUsuarios(TipoMensaje.MSJ_CONF_LU, new ListaUsuarios(datos)));
-        } catch (IOException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
