@@ -65,7 +65,7 @@ public class OyenteServidor extends Thread {
     		case MSJ_CONF_LU:
                 ((MsjListaUsuarios)msj).getContenido().toString();
                 break;
-    		case MSJ_PEDIR_FICHERO:
+    		case MSJ_FICH_INEX:
     			System.out.println("El fichero " + ((MsjString)msj).getContenido().toString() + " no está disponible.");
     		case MSJ_PREPARADO_SC:
     			break;

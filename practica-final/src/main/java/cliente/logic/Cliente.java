@@ -14,6 +14,7 @@ import javax.management.RuntimeErrorException;
 
 import mensaje.MsjListaUsuarios;
 import mensaje.MsjString;
+import mensaje.MsjUsuario;
 import mensaje.MsjVacio;
 import mensaje.TipoMensaje;
 import servidor.logic.Usuario;
@@ -53,7 +54,7 @@ public class Cliente {
         fOut = new ObjectOutputStream(cs.getOutputStream());
         OyenteServidor hc = new OyenteServidor(nombre, cs);
         hc.start();
-        fOut.writeObject(new MsjString(TipoMensaje.MSJ_CONEXION, usuario));
+        fOut.writeObject(new MsjUsuario(TipoMensaje.MSJ_CONEXION, usuario));
         fOut.flush();
         
         while(!conexionTerminada) {
