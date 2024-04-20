@@ -7,8 +7,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 import javax.management.RuntimeErrorException;
 
@@ -25,14 +27,16 @@ public class Cliente {
 	private ObjectOutputStream fOut;
 	private boolean conexionTerminada;
 	private Usuario usuario;
-	private List<String> lista;
+	private Socket cs;
+	private ServerSocket ss;
+	private Set<String> lista;
 
 
 
     public Cliente(String nombre) {
         this.nombre = nombre;
         this.conexionTerminada = false;
-        this.lista = new ArrayList<String>();
+        this.lista = new HashSet<String>();
         this.usuario= new Usuario (nombre, lista);
     }
 
@@ -50,12 +54,14 @@ public class Cliente {
     
     private void Start() throws UnknownHostException, IOException, ClassNotFoundException {
     	//TODO: Cambiar puerto
-    	Socket cs = new Socket("localhost", 2024);
+    	cs = new Socket("localhost", 2024);
         fOut = new ObjectOutputStream(cs.getOutputStream());
         OyenteServidor hc = new OyenteServidor(nombre, cs);
-        hc.start();
+        hc.run();
         fOut.writeObject(new MsjUsuario(TipoMensaje.MSJ_CONEXION, usuario));
         fOut.flush();
+        
+        ss = new ServerSocket()
         
         while(!conexionTerminada) {
             gestionarAcciones(pedirAcciones());
@@ -108,11 +114,9 @@ public class Cliente {
     private void finalizarConexion() throws IOException {
     	fOut.writeObject(new MsjVacio(TipoMensaje. MSJ_CERRAR_CONEXION));
         fOut.flush();
+        fOut.close();
+        cs.close();
         conexionTerminada = true;
     }
-    // pedir nombre ususario
-    // relizar la conexion con el servidor 
     
-    //se crea el oyente servidor para manejar la conexion
-    //bucle (true mientras no se desconecte) para pedir acciones al cliente
 }
