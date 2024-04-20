@@ -47,7 +47,10 @@ public class BaseDatos {
         String nombreUser = "";
         controlador.request_read();
         for (Usuario user : datos.values()) {
-            // user.getFicheros().
+            if (user.getFicheros().contains(idFichero)) {
+                nombreUser = user.getId();
+                break;
+            }
         }
         controlador.release_read();
         return nombreUser;

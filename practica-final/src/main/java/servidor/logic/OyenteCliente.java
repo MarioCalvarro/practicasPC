@@ -10,7 +10,8 @@ import mensaje.*;
 class OyenteCliente extends Thread {
     private BaseDatos baseDatos;
     private TablaFlujos flujos;
-    private ObjectInputStream fIn;
+    private ObjectInputStream fIn;      //El flujo de entrada no estará
+                                        //compartido
     private ObjectOutputStream fOut;
     private String id;
     private int numThread;
@@ -51,10 +52,12 @@ class OyenteCliente extends Thread {
             //TODO: Logger
             System.out.println("Solicitud de conexión de: " + this.id);
             System.out.println("Enviando confirmación de conexión");
+            //No hace falta control de concurrencia aquí porque todavía no está
+            //compartido
             fOut.writeObject(new MsjVacio(TipoMensaje.MSJ_CONF_CONEXION));
 
             //Actualizamos las tablas
-            this.flujos.nuevoHilo(numThread, id, fIn, fOut);
+            this.flujos.nuevoHilo(id, fOut);
             this.baseDatos.conexionUsuario(user);
         } catch (Exception e) {
             //TODO: Mejorar salida
@@ -74,13 +77,15 @@ class OyenteCliente extends Thread {
                     break;
                 case MSJ_PEDIR_FICHERO:
                     String nombreFichero = ((MsjString) msj).getContenido();
-                    iniciarConexionP2P(nombreFichero);
+                    solicitarFichero(nombreFichero);
+                    break;
+                case MSJ_PREPARADO_SC:
+                    String ficheroIpPort = ((MsjString) msj).getContenido();
+
+                    String[] palabras = ficheroIpPort.split(" ");
                     break;
                 case MSJ_FIN_EMISION_FICHERO:
                     actualizarBaseDatos();
-                    break;
-                case MSJ_PREPARADO_SC:
-                    //TODO
                     break;
                 case MSJ_CERRAR_CONEXION:
                     //TODO
@@ -93,8 +98,13 @@ class OyenteCliente extends Thread {
         }
     }
 
-    private void iniciarConexionP2P(String nombreFichero) {
-
+    private void solicitarFichero(String nombreFichero) throws IOException {
+        String nombreEmisor = baseDatos.getUsuarioConFichero(nombreFichero);
+        if (nombreEmisor == null) {
+            //No se ha podido encontrar el fichero en la base de datos
+            flujos.escribir(id, new MsjVacio(TipoMensaje.MSJ_FICH_INEX));
+        }
+        flujos.escribir(nombreEmisor, new MsjString(TipoMensaje.MSJ_PEDIR_FICHERO, nombreFichero));
     }
 
     private void actualizarBaseDatos() {
