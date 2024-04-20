@@ -19,9 +19,7 @@ import mensaje.TipoMensaje;
 
 
 public class OyenteServidor extends Thread {
-	
 	private boolean conexionTerminada;
-	private Socket cs;
 	private String nombre;
     private ServerSocket ss;
 	private ObjectInputStream fIn;
@@ -29,11 +27,8 @@ public class OyenteServidor extends Thread {
     private Lock lock;
     private String puerto;
 
-
-	
 	public OyenteServidor(String nombre, Socket cs){
 		this.conexionTerminada = false;
-		this.cs = cs;
 		this.nombre = nombre;	
 		try {
             fIn = new ObjectInputStream(cs.getInputStream());
@@ -82,12 +77,12 @@ public class OyenteServidor extends Thread {
     			fOut.writeObject(new MsjString(TipoMensaje. MSJ_PREPARADO_CS, ((MsjString)msj).getContenido() + " " + this.nombre + " " + this.puerto ));
     	        fOut.flush();
     			lock.realeaseLock(MAX_PRIORITY);
-			try {
-				hiloEmisor.join();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				try {
+					hiloEmisor.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
     			break;
     			
     		case MSJ_PREPARADO_SC: // nombre fichero un string con dos palabras

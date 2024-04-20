@@ -21,34 +21,35 @@ import mensaje.MsjVacio;
 import mensaje.TipoMensaje;
 import servidor.logic.Usuario;
 
-//Poner bien los lock de fin fout
+//Poner bien los lock de fin y fout
+//Poner bien los puertos
+//Mirar cómo comunicar que se ha terminado la conexion al oyente
+//Manejar bien las excpecptiones
+
 public class Cliente {
     private String nombre;
 	private ObjectOutputStream fOut;
 	private boolean conexionTerminada;
 	private Usuario usuario;
 	private Socket cs;
-	private Set<String> lista;
 
 
 
     public Cliente(String nombre) {
         this.nombre = nombre;
         this.conexionTerminada = false;
-        this.lista = new HashSet<String>();
-        this.usuario= new Usuario (nombre, lista);
-    }
-
-    public String getNombre() {
-        return nombre;
+        this.usuario= new Usuario (nombre, new HashSet<String>());
     }
     
     public void main(String args[]) throws UnknownHostException, IOException, ClassNotFoundException{ 	
+    	Cliente cliente = new Cliente(inicio());
+    	cliente.Start();	
+    }
+    
+    private String inicio() {
     	Scanner scanner = new Scanner(System.in);
     	System.out.println("Bienvenido. Introduzca el nombre de usuario:");
-    	String name = scanner.next();
-    	Cliente cliente = new Cliente(name);
-    	cliente.Start();	
+    	return scanner.next();
     }
     
     private void Start() throws UnknownHostException, IOException, ClassNotFoundException {
@@ -60,7 +61,6 @@ public class Cliente {
         fOut.writeObject(new MsjUsuario(TipoMensaje.MSJ_CONEXION, usuario));
         fOut.flush();
         
-        
         while(!conexionTerminada) {
             gestionarAcciones(pedirAcciones());
         }
@@ -69,9 +69,9 @@ public class Cliente {
             hc.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }	
-    	
+        }	  	
     }
+    
     private int pedirAcciones() { 	
         Scanner scanner = new Scanner(System.in);
     	System.out.println("Elige la acción que deseas hacer: ");
@@ -117,4 +117,7 @@ public class Cliente {
         conexionTerminada = true;
     }
     
+    public String getNombre() {
+        return nombre;
+    }   
 }

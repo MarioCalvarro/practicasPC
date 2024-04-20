@@ -15,9 +15,7 @@ public class HiloEmisor extends Thread{
 	private FileInputStream fileInputStream;
 	private ObjectOutputStream fOut;
 	private ObjectInputStream fIn;
-
 	private String archivo;
-	
 	
 	public HiloEmisor(String archivo, ServerSocket ss) {
 		this.ss = ss;

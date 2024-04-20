@@ -18,12 +18,10 @@ public class HiloReceptor extends Thread{
 	private ObjectInputStream fIn;
 	private FileOutputStream fileOutputStream;
 	private ObjectOutputStream fOut;
-	private String archivo;
 
 	
 	public HiloReceptor(String archivo ,String id, String puerto) throws NumberFormatException, UnknownHostException, IOException {
 		cs = new Socket(id, Integer.parseInt(puerto));
-        this.archivo=archivo;
 		fileOutputStream = new FileOutputStream(archivo+".txt");
 
 		try {
