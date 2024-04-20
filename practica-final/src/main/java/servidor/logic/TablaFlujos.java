@@ -7,6 +7,7 @@ import java.util.Map;
 
 import concurrencia.ControlAcceso;
 import concurrencia.MonitorRW;
+import servidor.ui.ServerLogger;
 
 public class TablaFlujos {
     private ControlAcceso controladorOut;
@@ -29,8 +30,7 @@ public class TablaFlujos {
             datosOut.get(id).writeObject(obj);
             datosOut.get(id).flush();
         } catch (IOException e) {
-            //TODO: Error
-            controladorOut.release_write();
+            ServerLogger.logError("Error al escribir un mensaje en el canal con el cliente '" + id + "'.");
         }
         controladorOut.release_write();
     }

@@ -1,6 +1,5 @@
 package mensaje;
 
-//TODO: El servidor crea el socket entre los clientes?
 public enum TipoMensaje {
     //Envía nombre usuario (String)
     MSJ_CONEXION,

@@ -8,6 +8,7 @@ import concurrencia.ControlAcceso;
 import concurrencia.SemaforoRW;
 import mensaje.MsjListaUsuarios;
 import mensaje.TipoMensaje;
+import servidor.ui.ServerLogger;
 
 public class BaseDatos {
     private Map<String, Usuario> datos;
@@ -49,8 +50,7 @@ public class BaseDatos {
         try {
             flujos.escribir(id, new MsjListaUsuarios(TipoMensaje.MSJ_CONF_LU, new ListaUsuarios(datos)));
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            ServerLogger.logError("Error al enviar la lista de usuarios al cliente '" + id + "'.");
         }
         controlador.release_read();
     }

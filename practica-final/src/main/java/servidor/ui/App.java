@@ -1,21 +1,19 @@
 package servidor.ui;
 
-import java.util.Scanner;
+import java.io.IOException;
 
 import servidor.logic.Servidor;
 
 public class App {
-	
-	
-	
 	public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Bienvenido al Servidor");    
-        Servidor s = new Servidor();
-        while(true) {
-            System.out.println("Elije la acción que deseas hacer");
-            break;
+        ServerLogger.log("El servidor va a iniciarse.");
+        Servidor s = null;
+        try {
+            s = new Servidor();
+        } catch (IOException e) {
+            ServerLogger.logError("Error al crear un nuevo servidor. Abortando.");
+            System.exit(1);
         }
-        sc.close();
+        s.start();
     }
 }

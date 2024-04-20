@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import mensaje.*;
+import servidor.ui.ServerLogger;
 
 //TODO: Log
 class OyenteCliente extends Thread {
@@ -17,9 +18,11 @@ class OyenteCliente extends Thread {
                                         //compartido
     private ObjectOutputStream fOut;
     private String id;
+    private final int numThread;
 
-    public OyenteCliente(Socket s, BaseDatos baseDatos, TablaFlujos flujos, TablaSolicitudes solicitudes)
+    public OyenteCliente(Socket s, int numThread,  BaseDatos baseDatos, TablaFlujos flujos, TablaSolicitudes solicitudes)
     {
+        this.numThread = numThread;
         this.baseDatos = baseDatos;
         this.flujos = flujos;
         this.solicitudes = solicitudes;
@@ -27,14 +30,21 @@ class OyenteCliente extends Thread {
             fIn = new ObjectInputStream(s.getInputStream());
             fOut = new ObjectOutputStream(s.getOutputStream());
         } catch (Exception e) {
-            e.printStackTrace();
+            ServerLogger.logError("Error al tomar los flujos del canal con un cliente. Abortando conexión.");
+            interrupt();
         }
+    }
+
+    public String getUserId() {
+        return this.id;
     }
 
     @Override
     public void run() {
         try {
+            ServerLogger.log("El servidor va a iniciar la conexión con un nuevo cliente.");
             establecerConexion();
+            ServerLogger.log("Iniciando escucha activa en el canal con el cliente '" + this.id + "'.");
             iniciarEscucha();
         } catch (Exception e) {
             return;
@@ -46,14 +56,14 @@ class OyenteCliente extends Thread {
         try {
             msj = (MsjUsuario) fIn.readObject();
             if (msj.getTipo() != TipoMensaje.MSJ_CONEXION) {
-                //TODO: Error
+                ServerLogger.logError("Error al intentar conectar con un cliente. No se ha recibido el mensaje de conexión.");
                 throw new Exception();
             }
             Usuario user = msj.getContenido();
             this.id = user.getId();
-            //TODO: Logger
-            System.out.println("Solicitud de conexión de: " + this.id);
-            System.out.println("Enviando confirmación de conexión");
+
+            ServerLogger.log("Solicitud de conexión de '" + this.id + "'.");
+            ServerLogger.log("Enviando confirmación de conexión a '" + this.id + "'.");
             //No hace falta control de concurrencia aquí porque todavía no está
             //compartido
             fOut.writeObject(new MsjVacio(TipoMensaje.MSJ_CONF_CONEXION));
@@ -61,8 +71,9 @@ class OyenteCliente extends Thread {
             //Actualizamos las tablas
             this.flujos.nuevoHilo(id, fOut);
             this.baseDatos.conexionUsuario(user);
+            ServerLogger.log("La conexión ha sido establecida con el cliente '" + this.id + "'.");
         } catch (Exception e) {
-            //TODO: Mejorar salida
+            ServerLogger.logError("Error al intentar conectar con un cliente. Abortando conexión.");
             interrupt();
         }
     }
@@ -74,11 +85,12 @@ class OyenteCliente extends Thread {
             msj = (Mensaje) fIn.readObject();
             switch(msj.getTipo()) {
                 case MSJ_LU:
-                    //Enviar la lista de usuarios
+                    ServerLogger.log("Recibida solicitud de envío de lista de usuarios de: " + this.id);
                     baseDatos.enviarUsuarios(id, flujos);
                     break;
                 case MSJ_PEDIR_FICHERO:
                     String nombreFichero = ((MsjString) msj).getContenido();
+                    ServerLogger.log("Recibida solicitud de envío del fichero '" + nombreFichero  + "' del cliente: " + this.id);
                     solicitarFichero(nombreFichero);
                     break;
                 case MSJ_PREPARADO_CS:
@@ -87,12 +99,16 @@ class OyenteCliente extends Thread {
                     break;
                 case MSJ_FIN_EMISION_FICHERO:
                     String fichero = ((MsjString) msj).getContenido();
+                    ServerLogger.log("El cliente '" + this.id + "' acaba de completar la descarga del fichero '" + fichero + "'. Actualizando base de datos.");
                     baseDatos.nuevoFicheroEnUser(this.id, fichero);
                     break;
                 case MSJ_CERRAR_CONEXION:
+                    ServerLogger.log("El cliente '" + this.id + "' acaba de desconectarse. Actualizando base de datos.");
                     baseDatos.desconexionUsuario(this.id);
+                    conectados = false;
                     break;
                 default:
+                    ServerLogger.logError("El cliente '" + this.id + "' acaba de enviar un mensaje erroneo. Cerrando la conexión.");
                     interrupt();
                     break;
             }
@@ -102,18 +118,23 @@ class OyenteCliente extends Thread {
     private void solicitarFichero(String nombreFichero) throws IOException {
         String nombreEmisor = baseDatos.getUsuarioConFichero(nombreFichero);
         if (nombreEmisor == null) {
-            //No se ha podido encontrar el fichero en la base de datos
+            ServerLogger.logError("El fichero '" + nombreFichero + "' no se encuentra en la base de datos. Enviando 'Fichero inexistente' al cliente '" + this.id + "'.");
             flujos.escribir(id, new MsjVacio(TipoMensaje.MSJ_FICH_INEX));
         }
-        solicitudes.nuevaSolicitud(nombreFichero, id);
+        ServerLogger.log("El fichero '" + nombreFichero + "' se encuentra en el cliente '" + nombreEmisor + "'. Enviando solicitud de fichero.");
+        solicitudes.nuevaSolicitud(numThread, nombreFichero, id);
         flujos.escribir(nombreEmisor, new MsjString(TipoMensaje.MSJ_PEDIR_FICHERO, nombreFichero));
     }
 
     private void enviarPreparadoSC(String ficheroIpPort) {
         //Separado: Nombre fichero preparado - IP emisor - Puerto emisor
         String[] separado = ficheroIpPort.split(" ");
-        String nombreReceptor = solicitudes.getSiguienteReceptor(separado[0]);
-        String ipPuerto = separado[1] + separado[2];
+        ServerLogger.log("El cliente '" + this.id + "' tiene preparado el fichero '" + separado[0] + "'.");
+
+        String nombreReceptor = solicitudes.getSiguienteReceptor(numThread, separado[0]);
+        String ipPuerto = separado[1] + " " + separado[2];
+
+        ServerLogger.log("Enviando mensaje de preparado fichero '" + separado[0] +  "' al receptor '" + nombreReceptor +  "'.");
         flujos.escribir(nombreReceptor, new MsjString(TipoMensaje.MSJ_PREPARADO_SC, ipPuerto));
     }
 }
