@@ -21,7 +21,7 @@ import mensaje.MsjVacio;
 import mensaje.TipoMensaje;
 import servidor.logic.Usuario;
 
-
+//Poner bien los lock de fin fout
 public class Cliente {
     private String nombre;
 	private ObjectOutputStream fOut;
