@@ -1,13 +1,10 @@
 package servidor.logic;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 public class Servidor {
@@ -18,9 +15,9 @@ public class Servidor {
 
     private ServerSocket ss;
     private List<OyenteCliente> clientes;
-    private Map<String, Usuario> baseDatos;
-    private Map<String, ObjectInputStream> tablaFlujosIn;
-    private Map<String, ObjectOutputStream> tablaFlujosOut;
+    private BaseDatos baseDatos;
+    private TablaFlujos flujos;
+    private TablaSolicitudes solicitudes;
 
     public static void main(String[] args) {
         Servidor s = null;
@@ -41,13 +38,15 @@ public class Servidor {
     public Servidor() throws IOException {
         ss = new ServerSocket(PORT_NUMBER);
         clientes = new ArrayList<OyenteCliente>();
+        baseDatos = new BaseDatos();
+        flujos = new TablaFlujos();
     }
 
     public void start() {
         while (acceptingConnections) {
             try {
                 Socket cs = ss.accept();
-                OyenteCliente hc = new OyenteCliente(cs, baseDatos, tablaFlujosIn, tablaFlujosOut);
+                OyenteCliente hc = new OyenteCliente(cs, baseDatos, flujos, solicitudes);
                 hc.start();
                 clientes.add(hc);
             }

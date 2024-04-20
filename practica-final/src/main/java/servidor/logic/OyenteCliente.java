@@ -10,17 +10,18 @@ import mensaje.*;
 class OyenteCliente extends Thread {
     private BaseDatos baseDatos;
     private TablaFlujos flujos;
+    private TablaSolicitudes solicitudes;
+
     private ObjectInputStream fIn;      //El flujo de entrada no estará
                                         //compartido
     private ObjectOutputStream fOut;
     private String id;
-    private int numThread;
 
-    public OyenteCliente(Socket s, int numThread, BaseDatos baseDatos, TablaFlujos flujos)
+    public OyenteCliente(Socket s, BaseDatos baseDatos, TablaFlujos flujos, TablaSolicitudes solicitudes)
     {
-        this.numThread = numThread;
         this.baseDatos = baseDatos;
         this.flujos = flujos;
+        this.solicitudes = solicitudes;
         try {
             fIn = new ObjectInputStream(s.getInputStream());
             fOut = new ObjectOutputStream(s.getOutputStream());
@@ -81,8 +82,7 @@ class OyenteCliente extends Thread {
                     break;
                 case MSJ_PREPARADO_CS:
                     String ficheroIpPort = ((MsjString) msj).getContenido();
-                    enviarPreparadoSC();
-                    String[] palabras = ficheroIpPort.split(" ");
+                    enviarPreparadoSC(ficheroIpPort);
                     break;
                 case MSJ_FIN_EMISION_FICHERO:
                     actualizarBaseDatos();
@@ -104,7 +104,16 @@ class OyenteCliente extends Thread {
             //No se ha podido encontrar el fichero en la base de datos
             flujos.escribir(id, new MsjVacio(TipoMensaje.MSJ_FICH_INEX));
         }
+        solicitudes.nuevaSolicitud(nombreFichero, id);
         flujos.escribir(nombreEmisor, new MsjString(TipoMensaje.MSJ_PEDIR_FICHERO, nombreFichero));
+    }
+
+    private void enviarPreparadoSC(String ficheroIpPort) {
+        //Separado: Nombre fichero preparado - IP emisor - Puerto emisor
+        String[] separado = ficheroIpPort.split(" ");
+        String nombreReceptor = solicitudes.getSiguienteReceptor(separado[0]);
+        String ipPuerto = separado[1] + separado[2];
+        flujos.escribir(nombreReceptor, new MsjString(TipoMensaje.MSJ_PREPARADO_SC, ipPuerto));
     }
 
     private void actualizarBaseDatos() {
