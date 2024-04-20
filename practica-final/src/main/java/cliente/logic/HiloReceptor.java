@@ -13,7 +13,7 @@ import mensaje.MsjString;
 import mensaje.MsjVacio;
 import mensaje.TipoMensaje;
 
-public class HiloReceptor {
+public class HiloReceptor extends Thread{
 	private Socket cs;
 	private ObjectInputStream fIn;
 	private FileOutputStream fileOutputStream;
@@ -23,41 +23,39 @@ public class HiloReceptor {
 	
 	public HiloReceptor(String archivo ,String id, String puerto) throws NumberFormatException, UnknownHostException, IOException {
 		cs = new Socket(id, Integer.parseInt(puerto));
+        this.archivo=archivo;
+		fileOutputStream = new FileOutputStream(archivo+".txt");
+
 		try {
-            fIn = new ObjectInputStream(cs.getOutputStream());
-            fOut = new ObjectOutputStream(cs.getInputStream());
-            this.archivo=archivo;
-   		 	fileOutputStream = new FileOutputStream(archivo+".txt");
+            fIn = new ObjectInputStream(cs.getInputStream());
+            fOut = new ObjectOutputStream(cs.getOutputStream());
             run();
         } catch (Exception e) {
             e.printStackTrace();
         }
 	}
 	
-	private void run() throws ClassNotFoundException, IOException {
+	@Override
+	public void run() {
 		// Crear buffer para escritura del archivo
         byte[] buffer = new byte[1024];
         int bytesRead;
         
         // Leer datos del socket y escribirlos en el archivo
-        while ((bytesRead = fIn.read(buffer)) != -1) {
-            fileOutputStream.write(buffer, 0, bytesRead);
-        } 
-        
-        fOut.writeObject(new MsjVacio(TipoMensaje. MSJ_CERRAR_CONEXION));
-        fOut.flush();
-        
-        
-        //Esto lo tego q mandar al servidor
-        fOut.writeObject(new MsjString(TipoMensaje. MSJ_FIN_EMISION_FICHERO, archivo));
-        fOut.flush();
-        
-        fIn.close();
-        fileOutputStream.close();
-        fOut.close();
-        cs.close();
-        
-        
+        try {
+			while ((bytesRead = fIn.read(buffer)) != -1) {
+			    fileOutputStream.write(buffer, 0, bytesRead);
+			    fOut.writeObject(new MsjVacio(TipoMensaje. MSJ_CERRAR_CONEXION));
+		        fOut.flush();
+		        
+		        fIn.close();
+		        fileOutputStream.close();
+		        fOut.close();
+		        cs.close();
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}     
 	}	
-	
 }

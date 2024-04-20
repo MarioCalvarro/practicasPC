@@ -28,7 +28,6 @@ public class Cliente {
 	private boolean conexionTerminada;
 	private Usuario usuario;
 	private Socket cs;
-	private ServerSocket ss;
 	private Set<String> lista;
 
 
@@ -61,7 +60,6 @@ public class Cliente {
         fOut.writeObject(new MsjUsuario(TipoMensaje.MSJ_CONEXION, usuario));
         fOut.flush();
         
-        ss = new ServerSocket()
         
         while(!conexionTerminada) {
             gestionarAcciones(pedirAcciones());

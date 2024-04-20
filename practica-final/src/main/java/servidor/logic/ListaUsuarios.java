@@ -1,5 +1,6 @@
 package servidor.logic;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 

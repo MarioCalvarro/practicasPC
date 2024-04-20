@@ -38,6 +38,7 @@ public class OyenteServidor extends Thread {
 		try {
             fIn = new ObjectInputStream(cs.getInputStream());
             fOut = new ObjectOutputStream(cs.getOutputStream());
+            run();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -81,6 +82,12 @@ public class OyenteServidor extends Thread {
     			fOut.writeObject(new MsjString(TipoMensaje. MSJ_PREPARADO_CS, ((MsjString)msj).getContenido() + " " + this.nombre + " " + this.puerto ));
     	        fOut.flush();
     			lock.realeaseLock(MAX_PRIORITY);
+			try {
+				hiloEmisor.join();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
     			break;
     			
     		case MSJ_PREPARADO_SC: // nombre fichero un string con dos palabras
@@ -90,10 +97,19 @@ public class OyenteServidor extends Thread {
 	            String puerto = scanner.next(); // Lee la siguiente palabra
     	        scanner.close();
     			HiloReceptor hiloReceptor = new HiloReceptor(archivo, id, puerto);
+				try {
+					hiloReceptor.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				lock.takeLock(MAX_PRIORITY);
+		        fOut.writeObject(new MsjString(TipoMensaje. MSJ_FIN_EMISION_FICHERO, archivo));
+		        fOut.flush();
+				lock.realeaseLock(MAX_PRIORITY);     
     			break;
     			
-    		default:
-    			
+    		default:			
     	}
     }
 }
