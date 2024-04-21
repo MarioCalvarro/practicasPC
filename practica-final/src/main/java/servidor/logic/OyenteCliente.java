@@ -117,7 +117,7 @@ class OyenteCliente extends Thread {
         String nombreEmisor = baseDatos.getUsuarioConFichero(nombreFichero);
         if (nombreEmisor == null) {
             ServerLogger.logError("El fichero '" + nombreFichero + "' no se encuentra en la base de datos. Enviando 'Fichero inexistente' al cliente '" + this.id + "'.");
-            flujos.escribir(id, new MsjVacio(TipoMensaje.MSJ_FICH_INEX));
+            flujos.escribir(id, new MsjString(TipoMensaje.MSJ_FICH_INEX, nombreFichero));
             return;
         }
         ServerLogger.log("El fichero '" + nombreFichero + "' se encuentra en el cliente '" + nombreEmisor + "'. Enviando solicitud de fichero.");

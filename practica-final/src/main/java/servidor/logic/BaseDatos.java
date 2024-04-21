@@ -56,7 +56,7 @@ public class BaseDatos {
     }
 
     public String getUsuarioConFichero(String idFichero) {
-        String nombreUser = "";
+        String nombreUser = null;
         controlador.request_read();
         for (Usuario user : datos.values()) {
             //Si tiene el fichero y está conectado
