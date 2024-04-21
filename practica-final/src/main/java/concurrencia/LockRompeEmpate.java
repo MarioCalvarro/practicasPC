@@ -11,8 +11,8 @@ public class LockRompeEmpate implements Lock {
         in = new Entero[N];
         last = new Entero[N];
         for (int i = 0; i < N; i++) {
-            in[i] = new Entero(0);
-            last[i] = new Entero(0);
+            in[i] = new Entero(-1);
+            last[i] = new Entero(-1);
         }
     }
 

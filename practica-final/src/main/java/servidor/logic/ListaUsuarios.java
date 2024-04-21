@@ -1,17 +1,22 @@
 package servidor.logic;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class ListaUsuarios implements Serializable {
-    private Collection<Usuario> lista;
+    private Set<Usuario> lista;
 
     public ListaUsuarios(Map<String, Usuario> mapa) {
-        this.lista = mapa.values();
+        Set<Usuario> lista = new HashSet<>();
+        for (Usuario user : mapa.values()) {
+            lista.add(user);
+        }
+        this.lista = lista;
     }
 
-    public Collection<Usuario> getUsuarios() {
+    public Set<Usuario> getUsuarios() {
         return lista;
     }
 }

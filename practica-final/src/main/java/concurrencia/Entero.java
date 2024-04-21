@@ -3,7 +3,7 @@ package concurrencia;
 public class Entero {
     private volatile int value;
 
-    Entero(int value) {
+    protected Entero(int value) {
         this.value = value;
     }
 
