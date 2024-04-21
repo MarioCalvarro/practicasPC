@@ -17,7 +17,7 @@ public class ControlOutput {
     }
 
     //ID: 0 hilo cliente, 1 OyenteServidor, 2 HiloReceptor
-    public void escribir(int id, Object obj) {
+    public void escribir(int id, Object obj) {      //TODO: Error fuera de rango?
         controladorOut.takeLock(id);
         try {
             datosOut.writeObject(obj);
