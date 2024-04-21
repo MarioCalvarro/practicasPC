@@ -16,11 +16,13 @@ class OyenteCliente extends Thread {
     //compartido
     private ObjectOutputStream fOut;
     private String id;
+    private int puertoNuevoCliente;
 
     public OyenteCliente(Socket s, BaseDatos baseDatos, TablaFlujos flujos, TablaSolicitudes solicitudes) {
         this.baseDatos = baseDatos;
         this.flujos = flujos;
         this.solicitudes = solicitudes;
+        this.puertoNuevoCliente = 2025;
         try {
             fIn = new ObjectInputStream(s.getInputStream());
             fOut = new ObjectOutputStream(s.getOutputStream());
@@ -61,7 +63,8 @@ class OyenteCliente extends Thread {
             ServerLogger.log("Enviando confirmación de conexión a '" + this.id + "'.");
             //No hace falta control de concurrencia aquí porque todavía no está
             //compartido
-            fOut.writeObject(new MsjVacio(TipoMensaje.MSJ_CONF_CONEXION));
+            fOut.writeObject(new MsjString(TipoMensaje.MSJ_CONF_CONEXION, String.valueOf(puertoNuevoCliente)));
+            puertoNuevoCliente += 1;
 
             //Actualizamos las tablas
             this.flujos.nuevoHilo(id, fOut);

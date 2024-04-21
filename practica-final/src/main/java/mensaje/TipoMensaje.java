@@ -4,7 +4,7 @@ public enum TipoMensaje {
     //Envía nombre usuario (String)
     MSJ_CONEXION,
 
-    //No envía nada
+    //Envía el puerto que se le asigna al cliente
     MSJ_CONF_CONEXION,
 
     //No envía nada

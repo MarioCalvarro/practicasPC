@@ -31,8 +31,16 @@ public class OyenteServidor extends Thread {
         this.nombre = nombre;
         this.controlOutput = controlOutput;
         this.emisorReceptor = new ArrayList<>();
+        Mensaje msj = null;
         try {
             fIn = new ObjectInputStream(cs.getInputStream());
+            msj = (Mensaje) fIn.readObject();
+            if (msj.getTipo() != TipoMensaje.MSJ_CONF_CONEXION) {
+                //TODO
+                throw new Exception();
+            }
+            int puertoCliente = Integer.parseInt(((MsjString) msj).getContenido());
+            ss = new ServerSocket(puertoCliente);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,8 +49,6 @@ public class OyenteServidor extends Thread {
     @Override
     public void run() {
         try {
-            ss = new ServerSocket(PORT_NUMBER);
-
             while (!isInterrupted()) {
                 gestionarPeticiones();
             }
