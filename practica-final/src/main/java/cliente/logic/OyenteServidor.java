@@ -24,6 +24,7 @@ public class OyenteServidor extends Thread {
     private ObjectOutputStream fOut;
     private Lock lock;
     private String puerto;
+    private ControlOutput controlOutput;
 
     public OyenteServidor(String nombre, Socket cs) {
         this.conexionTerminada = false;
