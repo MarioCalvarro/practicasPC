@@ -24,7 +24,7 @@ public class HiloReceptor extends Thread {
     public HiloReceptor(String archivo, String ip, String puerto, ControlOutput cO) throws NumberFormatException, UnknownHostException, IOException {
         cs = new Socket(ip, Integer.parseInt(puerto));
         this.archivo = archivo;
-        fileOutputStream = new FileOutputStream(archivo);
+        fileOutputStream = new FileOutputStream(Cliente.RUTA_FICHEROS + archivo);
         this.controlOutput = cO;
 
         fIn = new ObjectInputStream(cs.getInputStream());

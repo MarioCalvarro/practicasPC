@@ -14,6 +14,7 @@ public class BaseDatos {
     private ControlAcceso controlador;
 
     public BaseDatos() {
+        //TODO: Guardar información en un fichero
         datos = new HashMap<>();
         controlador = new SemaforoRW();
     }
@@ -65,5 +66,9 @@ public class BaseDatos {
         }
         controlador.release_read();
         return nombreUser;
+    }
+
+    public void guardarDatos() {
+        //TODO
     }
 }
