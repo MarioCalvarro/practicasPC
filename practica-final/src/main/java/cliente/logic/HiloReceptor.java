@@ -29,7 +29,7 @@ public class HiloReceptor extends Thread {
 
         fIn = new ObjectInputStream(cs.getInputStream());
         fOut = new ObjectOutputStream(cs.getOutputStream());
-        run();
+        this.start();
     }
 
     @Override

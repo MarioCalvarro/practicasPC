@@ -21,7 +21,7 @@ public class HiloEmisor extends Thread {
     public HiloEmisor(String archivo, Socket cs) {
         this.archivo = archivo;
         this.cs = cs;
-        this.run();
+        this.start();
     }
 
     @Override

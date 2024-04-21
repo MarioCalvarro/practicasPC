@@ -33,7 +33,7 @@ public class OyenteServidor extends Thread {
         this.emisorReceptor = new ArrayList<>();
         try {
             fIn = new ObjectInputStream(cs.getInputStream());
-            run();
+            this.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
