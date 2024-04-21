@@ -1,5 +1,6 @@
 package cliente.logic;
 
+import mensaje.Mensaje;
 import mensaje.MsjVacio;
 import mensaje.TipoMensaje;
 
@@ -40,18 +41,15 @@ public class HiloEmisor extends Thread {
 
 
             // Leer el archivo y enviarlo por el socket
-            while ((bytesRead = fIn.read(buffer)) != -1) {
+            while ((bytesRead = fileInputStream.read(buffer)) != -1) {
                 fOut.write(buffer, 0, bytesRead);
             }
 
-            fOut.writeObject(new MsjVacio(TipoMensaje.MSJ_FIN_EMISION_FICHERO));
-            fOut.flush();
-
-            MsjVacio msj = (MsjVacio) fIn.readObject();
+            //TODO: Si no es el de cerrar conexión indicar algún error
+            Mensaje msj = (MsjVacio) fIn.readObject();
             fOut.close();
             fIn.close();
             fileInputStream.close();
-
         } catch (Exception e) {
             e.printStackTrace();
         }

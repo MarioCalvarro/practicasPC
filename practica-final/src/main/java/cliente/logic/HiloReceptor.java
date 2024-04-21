@@ -1,5 +1,6 @@
 package cliente.logic;
 
+import mensaje.Mensaje;
 import mensaje.MsjVacio;
 import mensaje.TipoMensaje;
 
@@ -16,10 +17,9 @@ public class HiloReceptor extends Thread {
     private FileOutputStream fileOutputStream;
     private ObjectOutputStream fOut;
 
-
     public HiloReceptor(String archivo, String id, String puerto) throws NumberFormatException, UnknownHostException, IOException {
         cs = new Socket(id, Integer.parseInt(puerto));
-        fileOutputStream = new FileOutputStream(archivo + ".txt");
+        fileOutputStream = new FileOutputStream(archivo);
 
         try {
             fIn = new ObjectInputStream(cs.getInputStream());
@@ -38,17 +38,23 @@ public class HiloReceptor extends Thread {
 
         // Leer datos del socket y escribirlos en el archivo
         try {
+            Mensaje inicio = (MsjVacio) fIn.readObject();
+            if (inicio.getTipo() != TipoMensaje.MSJ_INICIO_EMISION_FICHERO) {
+                //TODO
+                throw new Exception();
+            }
+
             while ((bytesRead = fIn.read(buffer)) != -1) {
                 fileOutputStream.write(buffer, 0, bytesRead);
-                fOut.writeObject(new MsjVacio(TipoMensaje.MSJ_CERRAR_CONEXION));
-                fOut.flush();
-
-                fIn.close();
-                fileOutputStream.close();
-                fOut.close();
-                cs.close();
             }
-        } catch (IOException e) {
+            fileOutputStream.close();
+
+            fOut.writeObject(new MsjVacio(TipoMensaje.MSJ_CERRAR_CONEXION));
+            fOut.flush();
+            fIn.close();
+            fOut.close();
+            cs.close();
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

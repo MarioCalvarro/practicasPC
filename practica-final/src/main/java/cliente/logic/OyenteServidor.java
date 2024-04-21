@@ -83,6 +83,7 @@ public class OyenteServidor extends Thread {
                 }
                 break;
 
+            //TODO: Usando split
             case MSJ_PREPARADO_SC: // nombre fichero un string con dos palabras
                 Scanner scanner = new Scanner(((MsjString) msj).getContenido().toString());
                 String archivo = scanner.next(); // Lee la siguiente palabra
