@@ -1,20 +1,16 @@
 package servidor.logic;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Queue;
-
 import concurrencia.Lock;
 import concurrencia.LockRompeEmpate;
+
+import java.util.*;
 
 public class TablaSolicitudes {
     //Key: nombre fichero
     //Value: cola con nombres de receptores
     private Map<String, Queue<String>> solicitudesFichero;
     private Lock lock;
-    
+
     public TablaSolicitudes() {
         solicitudesFichero = new HashMap<>();
         lock = new LockRompeEmpate(Servidor.MAX_CONCURRENT_USERS);      //TODO: Está bien este lock?

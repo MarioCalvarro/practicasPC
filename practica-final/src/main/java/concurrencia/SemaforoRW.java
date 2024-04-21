@@ -3,14 +3,17 @@ package concurrencia;
 import java.util.concurrent.Semaphore;
 
 public class SemaforoRW implements ControlAcceso {
-	private Semaphore e, r, w;
+    private Semaphore e, r, w;
     private int nw, nr, dr, dw;
 
     public SemaforoRW() {
         e = new Semaphore(1, true);
         r = new Semaphore(0, true);
         w = new Semaphore(0, true);
-        nw = 0; nr = 0; dr = 0; dw = 0;
+        nw = 0;
+        nr = 0;
+        dr = 0;
+        dw = 0;
     }
 
     @Override
@@ -27,8 +30,7 @@ public class SemaforoRW implements ControlAcceso {
             if (dr > 0) {
                 dr -= 1;
                 r.acquire();      //Paso de testigo e
-            }
-            else {    //Ultimo reader
+            } else {    //Ultimo reader
                 e.release();
             }
         } catch (Exception e) {
@@ -45,8 +47,7 @@ public class SemaforoRW implements ControlAcceso {
             if (nr == 0 && dw > 0) {
                 dw -= 1;
                 w.release();      //Paso de testigo e
-            }
-            else {
+            } else {
                 e.release();
             }
         } catch (Exception e) {
@@ -75,19 +76,17 @@ public class SemaforoRW implements ControlAcceso {
     @Override
     public void release_write() {
         try {
-        e.acquire();
-        nw -= 1;
-        if (dr > 0) {
-            dr -= 1;
-            r.release();
-        }
-        else if (dw > 0) {
-            dw -= 1;
-            w.release();
-        }
-        else {
-            e.release();
-        }
+            e.acquire();
+            nw -= 1;
+            if (dr > 0) {
+                dr -= 1;
+                r.release();
+            } else if (dw > 0) {
+                dw -= 1;
+                w.release();
+            } else {
+                e.release();
+            }
         } catch (Exception e) {
             //TODO: Error
             throw new RuntimeException("Error");

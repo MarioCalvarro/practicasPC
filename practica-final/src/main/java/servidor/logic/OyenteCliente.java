@@ -1,26 +1,24 @@
 package servidor.logic;
 
+import mensaje.*;
+import servidor.ui.ServerLogger;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import mensaje.*;
-import servidor.ui.ServerLogger;
-
 class OyenteCliente extends Thread {
+    private final int numThread;
     private BaseDatos baseDatos;
     private TablaFlujos flujos;
     private TablaSolicitudes solicitudes;
-
     private ObjectInputStream fIn;      //El flujo de entrada no estará
-                                        //compartido
+    //compartido
     private ObjectOutputStream fOut;
     private String id;
-    private final int numThread;
 
-    public OyenteCliente(Socket s, int numThread,  BaseDatos baseDatos, TablaFlujos flujos, TablaSolicitudes solicitudes)
-    {
+    public OyenteCliente(Socket s, int numThread, BaseDatos baseDatos, TablaFlujos flujos, TablaSolicitudes solicitudes) {
         this.numThread = numThread;
         this.baseDatos = baseDatos;
         this.flujos = flujos;
@@ -82,14 +80,14 @@ class OyenteCliente extends Thread {
         boolean conectados = true;
         while (conectados) {
             msj = (Mensaje) fIn.readObject();
-            switch(msj.getTipo()) {
+            switch (msj.getTipo()) {
                 case MSJ_LU:
                     ServerLogger.log("Recibida solicitud de envío de lista de usuarios de: " + this.id);
                     baseDatos.enviarUsuarios(id, flujos);
                     break;
                 case MSJ_PEDIR_FICHERO:
                     String nombreFichero = ((MsjString) msj).getContenido();
-                    ServerLogger.log("Recibida solicitud de envío del fichero '" + nombreFichero  + "' del cliente: " + this.id);
+                    ServerLogger.log("Recibida solicitud de envío del fichero '" + nombreFichero + "' del cliente: " + this.id);
                     solicitarFichero(nombreFichero);
                     break;
                 case MSJ_PREPARADO_CS:
@@ -133,7 +131,7 @@ class OyenteCliente extends Thread {
         String nombreReceptor = solicitudes.getSiguienteReceptor(numThread, separado[0]);
         String ipPuerto = separado[1] + " " + separado[2];
 
-        ServerLogger.log("Enviando mensaje de preparado fichero '" + separado[0] +  "' al receptor '" + nombreReceptor +  "'.");
+        ServerLogger.log("Enviando mensaje de preparado fichero '" + separado[0] + "' al receptor '" + nombreReceptor + "'.");
         flujos.escribir(nombreReceptor, new MsjString(TipoMensaje.MSJ_PREPARADO_SC, ipPuerto));
     }
 }

@@ -29,7 +29,7 @@ public class Usuario implements Serializable {
     public void conectar() {
         conectado = true;
     }
-    
+
     public void desconectar() {
         conectado = false;
     }

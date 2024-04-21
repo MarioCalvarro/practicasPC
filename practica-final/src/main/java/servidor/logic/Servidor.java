@@ -1,13 +1,13 @@
 package servidor.logic;
 
+import servidor.ui.ServerLogger;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
-import servidor.ui.ServerLogger;
 
 public class Servidor {
     public static final int MAX_CONCURRENT_USERS = 20;
@@ -22,6 +22,13 @@ public class Servidor {
     private TablaFlujos flujos;
     private TablaSolicitudes solicitudes;
 
+    public Servidor() throws IOException {
+        ss = new ServerSocket(PORT_NUMBER);
+        clientes = new ArrayList<OyenteCliente>();
+        baseDatos = new BaseDatos();
+        flujos = new TablaFlujos();
+    }
+
     public static void main(String[] args) {
         ServerLogger.log("El servidor va a iniciarse.");
         Servidor s = null;
@@ -34,17 +41,11 @@ public class Servidor {
         s.start();
     }
 
-    public Servidor() throws IOException {
-        ss = new ServerSocket(PORT_NUMBER);
-        clientes = new ArrayList<OyenteCliente>();
-        baseDatos = new BaseDatos();
-        flujos = new TablaFlujos();
-    }
-
     public void start() {
         //El hilo 'hc' se encarga de comprobar si el admin del servidor lo
         //cierra (a nuevas conexiones, las actuales se mantienen) en algún momento
-        HiloCierre hCierre = new HiloCierre(); hCierre.start();
+        HiloCierre hCierre = new HiloCierre();
+        hCierre.start();
 
         ServerLogger.log("Se ha iniciado el servidor y ha comenzado a aceptar clientes.");
         int numThread = 0;
@@ -55,9 +56,8 @@ public class Servidor {
                 hc.start();
                 clientes.add(hc);
                 numThread += 1;         //TODO: Si hay más?
-                                        //Tal vez con una cola o algo así
-            }
-            catch (IOException e) {
+                //Tal vez con una cola o algo así
+            } catch (IOException e) {
                 ServerLogger.logError("Error al aceptar un nuevo cliente.");
             }
         }

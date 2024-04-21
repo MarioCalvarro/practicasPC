@@ -12,7 +12,7 @@ public enum TipoMensaje {
 
     //Envía la lista de usuarios (tabla de información)
     MSJ_CONF_LU,
-    
+
     //Fichero inexistente
     MSJ_FICH_INEX,
 

@@ -1,20 +1,20 @@
 package servidor.logic;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import concurrencia.ControlAcceso;
 import concurrencia.SemaforoRW;
 import mensaje.MsjListaUsuarios;
 import mensaje.TipoMensaje;
 import servidor.ui.ServerLogger;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class BaseDatos {
     private Map<String, Usuario> datos;
     private ControlAcceso controlador;
 
     public BaseDatos() {
-        datos = new HashMap<>(); 
+        datos = new HashMap<>();
         controlador = new SemaforoRW();
     }
 

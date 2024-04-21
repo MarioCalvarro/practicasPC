@@ -1,20 +1,20 @@
 package servidor.logic;
 
+import concurrencia.ControlAcceso;
+import concurrencia.MonitorRW;
+import servidor.ui.ServerLogger;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
-
-import concurrencia.ControlAcceso;
-import concurrencia.MonitorRW;
-import servidor.ui.ServerLogger;
 
 public class TablaFlujos {
     private ControlAcceso controladorOut;
     private Map<String, ObjectOutputStream> datosOut;
 
     public TablaFlujos() {
-        datosOut = new HashMap<>(); 
+        datosOut = new HashMap<>();
         controladorOut = new MonitorRW();
     }
 

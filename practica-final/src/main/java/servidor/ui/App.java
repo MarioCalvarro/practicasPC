@@ -1,11 +1,11 @@
 package servidor.ui;
 
-import java.io.IOException;
-
 import servidor.logic.Servidor;
 
+import java.io.IOException;
+
 public class App {
-	public static void main(String[] args) {
+    public static void main(String[] args) {
         ServerLogger.log("El servidor va a iniciarse.");
         Servidor s = null;
         try {
