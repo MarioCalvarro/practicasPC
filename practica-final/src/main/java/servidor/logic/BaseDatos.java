@@ -59,7 +59,8 @@ public class BaseDatos {
         String nombreUser = "";
         controlador.request_read();
         for (Usuario user : datos.values()) {
-            if (user.getFicheros().contains(idFichero)) {
+            //Si tiene el fichero y está conectado
+            if (user.getFicheros().contains(idFichero) && user.getConectado()) {
                 nombreUser = user.getId();
                 break;
             }

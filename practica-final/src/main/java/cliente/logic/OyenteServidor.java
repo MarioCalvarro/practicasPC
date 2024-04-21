@@ -86,7 +86,7 @@ public class OyenteServidor extends Thread {
                     break;
 
                 case MSJ_PREPARADO_SC: // nombre fichero un string con dos palabras
-                    String mensaje = ((MsjString) msj).getContenido().toString();
+                    String mensaje = ((MsjString) msj).getContenido();
                     String[] separado = mensaje.split(" ");
                     String archivo = separado[0]; String ip = separado[1]; String puerto = separado[2];
                     //Start está en el constructor
@@ -101,5 +101,4 @@ public class OyenteServidor extends Thread {
             ClienteLogger.log("Fin de conexión con el servidor.");
         }
     }
-
 }

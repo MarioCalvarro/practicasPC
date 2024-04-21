@@ -29,18 +29,6 @@ public class Servidor {
         flujos = new TablaFlujos();
     }
 
-    public static void main(String[] args) {
-        ServerLogger.log("El servidor va a iniciarse.");
-        Servidor s = null;
-        try {
-            s = new Servidor();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        s.start();
-    }
-
     public void start() {
         //El hilo 'hc' se encarga de comprobar si el admin del servidor lo
         //cierra (a nuevas conexiones, las actuales se mantienen) en algún momento

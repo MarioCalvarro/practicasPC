@@ -68,6 +68,7 @@ class OyenteCliente extends Thread {
             this.baseDatos.conexionUsuario(user);
             ServerLogger.log("La conexión ha sido establecida con el cliente '" + this.id + "'.");
         } catch (Exception e) {
+            //TODO
             ServerLogger.logError("Error al intentar conectar con un cliente. Abortando conexión.");
             interrupt();
         }
@@ -80,13 +81,13 @@ class OyenteCliente extends Thread {
             msj = (Mensaje) fIn.readObject();
             switch (msj.getTipo()) {
                 case MSJ_LU:
-                    ServerLogger.log("Recibida solicitud de envío de lista de usuarios de: " + this.id);
+                    ServerLogger.log("Recibida solicitud de envío de lista de usuarios de '" + this.id + "'.");
                     baseDatos.enviarUsuarios(id, flujos);
-                    ServerLogger.log("Enviada la lista de usuario a: " + this.id);
+                    ServerLogger.log("Enviada la lista de usuario a '" + this.id + "'.");
                     break;
                 case MSJ_PEDIR_FICHERO:
                     String nombreFichero = ((MsjString) msj).getContenido();
-                    ServerLogger.log("Recibida solicitud de envío del fichero '" + nombreFichero + "' del cliente: " + this.id);
+                    ServerLogger.log("Recibida solicitud de envío del fichero '" + nombreFichero + "' del cliente '" + this.id + "'.");
                     solicitarFichero(nombreFichero);
                     break;
                 case MSJ_PREPARADO_CS:
@@ -104,8 +105,7 @@ class OyenteCliente extends Thread {
                     conectados = false;
                     break;
                 default:
-                    ServerLogger.logError("El cliente '" + this.id + "' acaba de enviar un mensaje erroneo. Cerrando la conexión.");
-                    interrupt();
+                    ServerLogger.logError("El cliente '" + this.id + "' acaba de enviar un mensaje erróneo.");
                     break;
             }
         }
@@ -116,6 +116,7 @@ class OyenteCliente extends Thread {
         if (nombreEmisor == null) {
             ServerLogger.logError("El fichero '" + nombreFichero + "' no se encuentra en la base de datos. Enviando 'Fichero inexistente' al cliente '" + this.id + "'.");
             flujos.escribir(id, new MsjVacio(TipoMensaje.MSJ_FICH_INEX));
+            return;
         }
         ServerLogger.log("El fichero '" + nombreFichero + "' se encuentra en el cliente '" + nombreEmisor + "'. Enviando solicitud de fichero.");
         solicitudes.nuevaSolicitud(nombreFichero, id);
@@ -128,9 +129,8 @@ class OyenteCliente extends Thread {
         ServerLogger.log("El cliente '" + this.id + "' tiene preparado el fichero '" + separado[0] + "'.");
 
         String nombreReceptor = solicitudes.getSiguienteReceptor(separado[0]);
-        String ipPuerto = separado[1] + " " + separado[2];
 
         ServerLogger.log("Enviando mensaje de preparado fichero '" + separado[0] + "' al receptor '" + nombreReceptor + "'.");
-        flujos.escribir(nombreReceptor, new MsjString(TipoMensaje.MSJ_PREPARADO_SC, ipPuerto));
+        flujos.escribir(nombreReceptor, new MsjString(TipoMensaje.MSJ_PREPARADO_SC, ficheroIpPort));
     }
 }
