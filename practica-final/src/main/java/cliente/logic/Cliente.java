@@ -26,7 +26,6 @@ public class Cliente {
     private Usuario usuario;
     private Socket cs;
 
-
     public Cliente(String nombre) throws Exception {
         this.nombre = nombre;
         this.usuario = new Usuario(nombre, new HashSet<String>());      //TODO ficheros dentro de una carpeta
