@@ -52,6 +52,12 @@ public class Cliente {
     public void finalizarConexion() throws IOException {
         fOut.escribir(NUMERO_HILO, new MsjVacio(TipoMensaje.MSJ_CERRAR_CONEXION));
         hc.interrupt();
+        try {
+            hc.join();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         cs.close();
         //TODO: Cerrar el resto de hilos
     }

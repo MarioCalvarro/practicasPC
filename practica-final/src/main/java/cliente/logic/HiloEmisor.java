@@ -7,29 +7,26 @@ import mensaje.TipoMensaje;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 import cliente.ui.ClienteLogger;
 
 public class HiloEmisor extends Thread {
-    private ServerSocket ss;
     private Socket cs;
     private FileInputStream fileInputStream;
     private ObjectOutputStream fOut;
     private ObjectInputStream fIn;
     private String archivo;
 
-    public HiloEmisor(String archivo, ServerSocket ss) {
-        this.ss = ss;
+    public HiloEmisor(String archivo, Socket cs) {
+        this.archivo = archivo;
+        this.cs = cs;
         this.run();
     }
 
     @Override
     public void run() {
         try {
-            cs = ss.accept();
-
             fOut = new ObjectOutputStream(cs.getOutputStream());
             fIn = new ObjectInputStream(cs.getInputStream());
 

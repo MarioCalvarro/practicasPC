@@ -1,7 +1,7 @@
 package servidor.logic;
 
-import concurrencia.Lock;
-import concurrencia.LockRompeEmpate;
+import concurrencia.ControlAcceso;
+import concurrencia.SemaforoRW;
 
 import java.util.*;
 
@@ -9,32 +9,32 @@ public class TablaSolicitudes {
     //Key: nombre fichero
     //Value: cola con nombres de receptores
     private Map<String, Queue<String>> solicitudesFichero;
-    private Lock lock;
+    private ControlAcceso control;
 
     public TablaSolicitudes() {
         solicitudesFichero = new HashMap<>();
-        lock = new LockRompeEmpate(Servidor.MAX_CONCURRENT_USERS);      //TODO: Está bien este lock?
+        control = new SemaforoRW();
     }
 
     public void nuevaSolicitud(int i, String fichero, String receptor) {
-        lock.takeLock(i);
+        control.request_write();
         if (solicitudesFichero.get(fichero) == null) {
-            solicitudesFichero.put(fichero, new ArrayDeque<String>());  //TODO: Otra implementación?
+            solicitudesFichero.put(fichero, new ArrayDeque<String>());
         }
         solicitudesFichero.get(fichero).add(receptor);
-        lock.releaseLock(i);
+        control.release_write();
     }
 
     public String getSiguienteReceptor(int i, String fichero) {
         String rec = null;
-        lock.takeLock(i);
+        control.request_write();
         try {
             rec = solicitudesFichero.get(fichero).remove();
         } catch (NoSuchElementException e) {
             //No queremos una cola vacía ocupando espacio
             solicitudesFichero.remove(fichero);
         }
-        lock.releaseLock(i);
+        control.release_write();
         return rec;
     }
 }

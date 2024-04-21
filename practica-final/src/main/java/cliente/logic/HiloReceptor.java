@@ -1,6 +1,7 @@
 package cliente.logic;
 
 import mensaje.Mensaje;
+import mensaje.MsjString;
 import mensaje.MsjVacio;
 import mensaje.TipoMensaje;
 
@@ -12,22 +13,23 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class HiloReceptor extends Thread {
+    private static final int NUMERO_HILO = 2;
+    private String archivo;
     private Socket cs;
     private ObjectInputStream fIn;
     private FileOutputStream fileOutputStream;
     private ObjectOutputStream fOut;
+    private ControlOutput controlOutput;
 
-    public HiloReceptor(String archivo, String id, String puerto) throws NumberFormatException, UnknownHostException, IOException {
-        cs = new Socket(id, Integer.parseInt(puerto));
+    public HiloReceptor(String archivo, String ip, String puerto, ControlOutput cO) throws NumberFormatException, UnknownHostException, IOException {
+        cs = new Socket(ip, Integer.parseInt(puerto));
+        this.archivo = archivo;
         fileOutputStream = new FileOutputStream(archivo);
+        this.controlOutput = cO;
 
-        try {
-            fIn = new ObjectInputStream(cs.getInputStream());
-            fOut = new ObjectOutputStream(cs.getOutputStream());
-            run();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        fIn = new ObjectInputStream(cs.getInputStream());
+        fOut = new ObjectOutputStream(cs.getOutputStream());
+        run();
     }
 
     @Override
@@ -54,6 +56,8 @@ public class HiloReceptor extends Thread {
             fIn.close();
             fOut.close();
             cs.close();
+
+            controlOutput.escribir(NUMERO_HILO,new MsjString(TipoMensaje.MSJ_FIN_EMISION_FICHERO, archivo));
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
