@@ -9,7 +9,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 class OyenteCliente extends Thread {
-    private final int numThread;
     private BaseDatos baseDatos;
     private TablaFlujos flujos;
     private TablaSolicitudes solicitudes;
@@ -18,8 +17,7 @@ class OyenteCliente extends Thread {
     private ObjectOutputStream fOut;
     private String id;
 
-    public OyenteCliente(Socket s, int numThread, BaseDatos baseDatos, TablaFlujos flujos, TablaSolicitudes solicitudes) {
-        this.numThread = numThread;
+    public OyenteCliente(Socket s, BaseDatos baseDatos, TablaFlujos flujos, TablaSolicitudes solicitudes) {
         this.baseDatos = baseDatos;
         this.flujos = flujos;
         this.solicitudes = solicitudes;
@@ -119,7 +117,7 @@ class OyenteCliente extends Thread {
             flujos.escribir(id, new MsjVacio(TipoMensaje.MSJ_FICH_INEX));
         }
         ServerLogger.log("El fichero '" + nombreFichero + "' se encuentra en el cliente '" + nombreEmisor + "'. Enviando solicitud de fichero.");
-        solicitudes.nuevaSolicitud(numThread, nombreFichero, id);
+        solicitudes.nuevaSolicitud(nombreFichero, id);
         flujos.escribir(nombreEmisor, new MsjString(TipoMensaje.MSJ_PEDIR_FICHERO, nombreFichero));
     }
 
@@ -128,7 +126,7 @@ class OyenteCliente extends Thread {
         String[] separado = ficheroIpPort.split(" ");
         ServerLogger.log("El cliente '" + this.id + "' tiene preparado el fichero '" + separado[0] + "'.");
 
-        String nombreReceptor = solicitudes.getSiguienteReceptor(numThread, separado[0]);
+        String nombreReceptor = solicitudes.getSiguienteReceptor(separado[0]);
         String ipPuerto = separado[1] + " " + separado[2];
 
         ServerLogger.log("Enviando mensaje de preparado fichero '" + separado[0] + "' al receptor '" + nombreReceptor + "'.");

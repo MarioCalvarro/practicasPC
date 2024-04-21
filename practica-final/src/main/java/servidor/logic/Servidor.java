@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Servidor {
-    public static final int MAX_CONCURRENT_USERS = 20;
+    //public static final int MAX_CONCURRENT_USERS = 20;
     public static final int PORT_NUMBER = 2024;
     private static final String EXIT_WORD = "exit";
 
@@ -48,15 +48,12 @@ public class Servidor {
         hCierre.start();
 
         ServerLogger.log("Se ha iniciado el servidor y ha comenzado a aceptar clientes.");
-        int numThread = 0;
         while (acceptingConnections) {
             try {
                 Socket cs = ss.accept();
-                OyenteCliente hc = new OyenteCliente(cs, numThread, baseDatos, flujos, solicitudes);
+                OyenteCliente hc = new OyenteCliente(cs, baseDatos, flujos, solicitudes);
                 hc.start();
                 clientes.add(hc);
-                numThread += 1;         //TODO: Si hay más?
-                //Tal vez con una cola o algo así
             } catch (IOException e) {
                 ServerLogger.logError("Error al aceptar un nuevo cliente.");
             }

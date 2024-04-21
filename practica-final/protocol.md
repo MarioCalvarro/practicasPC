@@ -37,7 +37,7 @@
 
 1. El usuario introduce el nombre del fichero que desea.
 1. (R) manda MENSAJE_PEDIR_FICHERO(nombre del fichero) a (S).
-    - Si el fichero no esta disponible: (S) hace un echo a (R). //TODO: igual no esta del todo bien
+    - Si el fichero no esta disponible: (S) manda MENSAJE_FICHERO_INEX a (R).
     - (R) se lo indica al usuario.
 3. (S) manda MENSAJE_PEDIR_FICHERO(nombre del fichero) a (E).
 4. (E) se queda esperando en el accept() de su ServerSocket.

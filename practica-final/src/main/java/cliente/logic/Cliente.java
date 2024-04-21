@@ -59,7 +59,6 @@ public class Cliente {
             e.printStackTrace();
         }
         cs.close();
-        //TODO: Cerrar el resto de hilos
     }
 
     public String getNombre() {
