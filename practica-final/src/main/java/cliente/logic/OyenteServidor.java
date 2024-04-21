@@ -5,20 +5,17 @@ import mensaje.MsjListaUsuarios;
 import mensaje.MsjString;
 import mensaje.TipoMensaje;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import cliente.ui.ClienteLogger;
 
 
 public class OyenteServidor extends Thread {
-    public static final int PORT_NUMBER = 2025;
-    public static final int NUMERO_HILO = 1;
+    private static final int NUMERO_HILO = 1;
 
     private String nombre;
     private ServerSocket ss;
