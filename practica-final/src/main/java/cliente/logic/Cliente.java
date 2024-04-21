@@ -7,17 +7,20 @@ import mensaje.TipoMensaje;
 import servidor.logic.Servidor;
 import servidor.logic.Usuario;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.HashSet;
+import java.util.Set;
 
 //Poner bien los lock de fin y fout
 //Poner bien los puertos
 //Mirar cómo comunicar que se ha terminado la conexion al oyente
-//Manejar bien las excpecptiones
+//Manejar bien las excepciones
 
 public class Cliente {
+    protected static final String RUTA_FICHEROS = "./usuarios/";
     private static final int NUMERO_HILO = 0;
 
     private String nombre;
@@ -28,7 +31,7 @@ public class Cliente {
 
     public Cliente(String nombre) throws Exception {
         this.nombre = nombre;
-        this.usuario = new Usuario(nombre, new HashSet<String>());      //TODO ficheros dentro de una carpeta
+        this.usuario = new Usuario(nombre, getFicherosUsuario(nombre));      //TODO ficheros dentro de una carpeta
 
         cs = new Socket("localhost", Servidor.PORT_NUMBER);
         ObjectOutputStream output = new ObjectOutputStream(cs.getOutputStream());
@@ -62,5 +65,19 @@ public class Cliente {
 
     public String getNombre() {
         return nombre;
+    }
+
+    private Set<String> getFicherosUsuario(String nombreUser) {
+        File carpetaUsuario = new File(RUTA_FICHEROS + nombreUser);
+        if (!carpetaUsuario.exists() || !carpetaUsuario.isDirectory()) {
+            carpetaUsuario.mkdirs();
+            return new HashSet<>();
+        }
+        Set<String> res = new HashSet<>();
+        File[] archivos = carpetaUsuario.listFiles();
+        for (File arc : archivos) {
+            res.add(arc.getName());
+        }
+        return res;
     }
 }

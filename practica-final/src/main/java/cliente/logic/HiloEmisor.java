@@ -30,7 +30,7 @@ public class HiloEmisor extends Thread {
             fOut = new ObjectOutputStream(cs.getOutputStream());
             fIn = new ObjectInputStream(cs.getInputStream());
 
-            fileInputStream = new FileInputStream(archivo);
+            fileInputStream = new FileInputStream(Cliente.RUTA_FICHEROS + archivo);
             fOut.writeObject(new MsjVacio(TipoMensaje.MSJ_INICIO_EMISION_FICHERO));
             fOut.flush();
 
