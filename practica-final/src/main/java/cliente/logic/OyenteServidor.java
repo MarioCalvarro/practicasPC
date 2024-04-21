@@ -56,44 +56,50 @@ public class OyenteServidor extends Thread {
         }
     }
 
-    private void gestionarPeticiones() throws ClassNotFoundException, IOException {
-    	Mensaje msj = (Mensaje) fIn.readObject();
+    private void gestionarPeticiones() {
+        try {
+            Mensaje msj = (Mensaje) fIn.readObject();
 
-        switch (msj.getTipo()) {
-            case MSJ_CONF_CONEXION:
-                ClienteLogger.log("Conectado el cliente " + nombre);
-                break;
+            switch (msj.getTipo()) {
+                case MSJ_CONF_CONEXION:
+                    ClienteLogger.log("Conectado el cliente " + nombre);
+                    break;
 
-            case MSJ_CONF_LU:
-                String res = ((MsjListaUsuarios) msj).getContenido().getUsuarios().toString();
-                ClienteLogger.log(res);
-                break;
+                case MSJ_CONF_LU:
+                    String res = ((MsjListaUsuarios) msj).getContenido().toString();
+                    System.out.println("La información disponible en el sistema es:\n" + res);
+                    break;
 
-            case MSJ_FICH_INEX:
-                ClienteLogger.logError("El fichero " + ((MsjString) msj).getContenido().toString() + " no está disponible.");
-                break;
+                case MSJ_FICH_INEX:
+                    ClienteLogger.logError("El fichero " + ((MsjString) msj).getContenido().toString() + " no está disponible.");
+                    break;
 
-            case MSJ_PEDIR_FICHERO: // creamos nuevo hilo para controlar p2p
-                //Esto bloqueará la llegada de nuevos mensajes hasta que el
-                //receptor se conecte. Simplemente se irán almacenando
-                controlOutput.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PREPARADO_CS, ((MsjString) msj).getContenido() + " " + this.nombre + " " + this.puerto));
+                case MSJ_PEDIR_FICHERO: // creamos nuevo hilo para controlar p2p
+                    //Esto bloqueará la llegada de nuevos mensajes hasta que el
+                    //receptor se conecte. Simplemente se irán almacenando
+                    controlOutput.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PREPARADO_CS, ((MsjString) msj).getContenido() + " " + this.nombre + " " + this.puerto));
 
-                Socket sEmisor = ss.accept();
-                //Start está en el constructor
-                HiloEmisor hiloEmisor = new HiloEmisor(((MsjString) msj).getContenido().toString(), sEmisor);
-                emisorReceptor.add(hiloEmisor);
-                break;
+                    Socket sEmisor = ss.accept();
+                    //Start está en el constructor
+                    HiloEmisor hiloEmisor = new HiloEmisor(((MsjString) msj).getContenido().toString(), sEmisor);
+                    emisorReceptor.add(hiloEmisor);
+                    break;
 
-            case MSJ_PREPARADO_SC: // nombre fichero un string con dos palabras
-                String mensaje = ((MsjString) msj).getContenido().toString();
-                String[] separado = mensaje.split(" ");
-                String archivo = separado[0]; String ip = separado[1]; String puerto = separado[2];
-                //Start está en el constructor
-                HiloReceptor hiloReceptor = new HiloReceptor(archivo, ip, puerto, controlOutput);
-                emisorReceptor.add(hiloReceptor);
-                break;
+                case MSJ_PREPARADO_SC: // nombre fichero un string con dos palabras
+                    String mensaje = ((MsjString) msj).getContenido().toString();
+                    String[] separado = mensaje.split(" ");
+                    String archivo = separado[0]; String ip = separado[1]; String puerto = separado[2];
+                    //Start está en el constructor
+                    HiloReceptor hiloReceptor = new HiloReceptor(archivo, ip, puerto, controlOutput);
+                    emisorReceptor.add(hiloReceptor);
+                    break;
 
-            default:
+                default:
+            }
+        } catch (Exception e) {
+            //TODO
+            ClienteLogger.log("Fin de conexión con el servidor.");
         }
     }
+
 }

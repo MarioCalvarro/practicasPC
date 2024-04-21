@@ -19,4 +19,15 @@ public class ListaUsuarios implements Serializable {
     public Set<Usuario> getUsuarios() {
         return lista;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        for (Usuario user : lista) {
+            sb.append(user).append('\n');
+        }
+
+        return sb.toString();
+    }
 }

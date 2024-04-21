@@ -37,4 +37,21 @@ public class Usuario implements Serializable {
     public void nuevoFichero(String fichero) {
         ficheros.add(fichero);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Usuario: ").append(id);
+        sb.append(". Ficheros: ");
+        for (String fichero : ficheros) {
+            sb.append(fichero).append(" ");
+        }
+        sb.append(". Conectado: ");
+        if (conectado) {
+            sb.append("Sí.");
+        } else {
+            sb.append("No.");
+        }
+        return sb.toString();
+    }
 }

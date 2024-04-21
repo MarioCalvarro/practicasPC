@@ -53,6 +53,7 @@ public class Cliente {
 
     public void finalizarConexion() throws IOException {
         fOut.escribir(NUMERO_HILO, new MsjVacio(TipoMensaje.MSJ_CERRAR_CONEXION));
+        cs.close();
         hc.interrupt();
         try {
             hc.join();
@@ -60,7 +61,6 @@ public class Cliente {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        cs.close();
     }
 
     public String getNombre() {
