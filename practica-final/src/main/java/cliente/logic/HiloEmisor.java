@@ -10,6 +10,8 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import cliente.ui.ClienteLogger;
+
 public class HiloEmisor extends Thread {
     private ServerSocket ss;
     private Socket cs;
@@ -45,8 +47,10 @@ public class HiloEmisor extends Thread {
                 fOut.write(buffer, 0, bytesRead);
             }
 
-            //TODO: Si no es el de cerrar conexión indicar algún error
             Mensaje msj = (MsjVacio) fIn.readObject();
+            if (msj.getTipo() != TipoMensaje.MSJ_CERRAR_CONEXION) {
+                ClienteLogger.logError("El receptor no ha indicado el cierre de la conexión.");
+            }
             fOut.close();
             fIn.close();
             fileInputStream.close();
