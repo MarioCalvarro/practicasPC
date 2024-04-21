@@ -28,6 +28,7 @@ public class Servidor {
         clientes = new ArrayList<OyenteCliente>();
         baseDatos = new BaseDatos();
         flujos = new TablaFlujos();
+        solicitudes = new TablaSolicitudes();
         puertoNuevoCliente = 2025;
     }
 
