@@ -35,7 +35,7 @@ public class App {
     }
 
     private static int pedirAcciones() {
-        System.out.println("Eliga la acción que desea hacer: ");
+        System.out.println("Elija la acción que desea hacer: ");
         System.out.println("1. Consultar información disponible en el sistema.");
         System.out.println("2. Descargar información deseada.");
         System.out.println("3. Terminar sesión.");
