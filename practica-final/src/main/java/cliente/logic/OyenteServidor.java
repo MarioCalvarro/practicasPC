@@ -23,8 +23,6 @@ public class OyenteServidor extends Thread {
     private String nombre;
     private ServerSocket ss;
     private ObjectInputStream fIn;
-    private ObjectOutputStream fOut;
-    private Lock lock;
     private String puerto;
     private ControlOutput controlOutput;
 
@@ -34,7 +32,6 @@ public class OyenteServidor extends Thread {
         this.controlOutput = controlOutput;
         try {
             fIn = new ObjectInputStream(cs.getInputStream());
-            fOut = new ObjectOutputStream(cs.getOutputStream());
             run();
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,7 +63,7 @@ public class OyenteServidor extends Thread {
                 break;
 
             case MSJ_CONF_LU:
-                ((MsjListaUsuarios) msj).getContenido().toString();
+                ((MsjListaUsuarios) msj).getContenido().getUsuarios().toString();
                 break;
 
             case MSJ_FICH_INEX:
@@ -87,9 +84,10 @@ public class OyenteServidor extends Thread {
             //TODO: Usando split
             case MSJ_PREPARADO_SC: // nombre fichero un string con dos palabras
                 Scanner scanner = new Scanner(((MsjString) msj).getContenido().toString());
-                String archivo = scanner.next(); // Lee la siguiente palabra
-                String id = scanner.next(); // Lee la siguiente palabra
-                String puerto = scanner.next(); // Lee la siguiente palabra
+                String[] separado = scanner.nextLine().split(" ");
+                String archivo = separado[0]; 
+                String id = separado[1]; 
+                String puerto = separado[2];
                 scanner.close();
                 HiloReceptor hiloReceptor = new HiloReceptor(archivo, id, puerto);
                 try {
