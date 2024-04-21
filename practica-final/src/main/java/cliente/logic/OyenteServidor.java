@@ -33,7 +33,6 @@ public class OyenteServidor extends Thread {
         this.emisorReceptor = new ArrayList<>();
         try {
             fIn = new ObjectInputStream(cs.getInputStream());
-            this.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -80,6 +79,7 @@ public class OyenteServidor extends Thread {
                 controlOutput.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PREPARADO_CS, ((MsjString) msj).getContenido() + " " + this.nombre + " " + this.puerto));
 
                 Socket sEmisor = ss.accept();
+                //Start está en el constructor
                 HiloEmisor hiloEmisor = new HiloEmisor(((MsjString) msj).getContenido().toString(), sEmisor);
                 emisorReceptor.add(hiloEmisor);
                 break;
@@ -87,9 +87,8 @@ public class OyenteServidor extends Thread {
             case MSJ_PREPARADO_SC: // nombre fichero un string con dos palabras
                 String mensaje = ((MsjString) msj).getContenido().toString();
                 String[] separado = mensaje.split(" ");
-                String archivo = separado[0]; 
-                String ip = separado[1]; 
-                String puerto = separado[2];
+                String archivo = separado[0]; String ip = separado[1]; String puerto = separado[2];
+                //Start está en el constructor
                 HiloReceptor hiloReceptor = new HiloReceptor(archivo, ip, puerto, controlOutput);
                 emisorReceptor.add(hiloReceptor);
                 break;
