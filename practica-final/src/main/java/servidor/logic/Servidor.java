@@ -21,12 +21,14 @@ public class Servidor {
     private BaseDatos baseDatos;
     private TablaFlujos flujos;
     private TablaSolicitudes solicitudes;
+    private int puertoNuevoCliente;
 
     public Servidor() throws IOException {
         ss = new ServerSocket(PORT_NUMBER);
         clientes = new ArrayList<OyenteCliente>();
         baseDatos = new BaseDatos();
         flujos = new TablaFlujos();
+        puertoNuevoCliente = 2025;
     }
 
     public void start() {
@@ -39,9 +41,10 @@ public class Servidor {
         while (acceptingConnections) {
             try {
                 Socket cs = ss.accept();
-                OyenteCliente hc = new OyenteCliente(cs, baseDatos, flujos, solicitudes);
+                OyenteCliente hc = new OyenteCliente(cs, baseDatos, flujos, solicitudes, puertoNuevoCliente);
                 hc.start();
                 clientes.add(hc);
+                puertoNuevoCliente += 1;
             } catch (IOException e) {
                 ServerLogger.logError("Error al aceptar un nuevo cliente.");
             }

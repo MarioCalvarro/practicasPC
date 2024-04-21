@@ -37,6 +37,7 @@ public class OyenteServidor extends Thread {
                 throw new Exception();
             }
             int puertoCliente = Integer.parseInt(((MsjString) msj).getContenido());
+            ClienteLogger.log("Creando 'ServerSocket' en el puerto " + String.valueOf(puertoCliente));
             ss = new ServerSocket(puertoCliente);
         } catch (Exception e) {
             e.printStackTrace();

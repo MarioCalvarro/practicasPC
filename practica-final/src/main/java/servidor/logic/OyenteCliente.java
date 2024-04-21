@@ -18,11 +18,11 @@ class OyenteCliente extends Thread {
     private String id;
     private int puertoNuevoCliente;
 
-    public OyenteCliente(Socket s, BaseDatos baseDatos, TablaFlujos flujos, TablaSolicitudes solicitudes) {
+    public OyenteCliente(Socket s, BaseDatos baseDatos, TablaFlujos flujos, TablaSolicitudes solicitudes, int puertoNuevoCliente) {
         this.baseDatos = baseDatos;
         this.flujos = flujos;
         this.solicitudes = solicitudes;
-        this.puertoNuevoCliente = 2025;
+        this.puertoNuevoCliente = puertoNuevoCliente;
         try {
             fIn = new ObjectInputStream(s.getInputStream());
             fOut = new ObjectOutputStream(s.getOutputStream());
@@ -64,7 +64,6 @@ class OyenteCliente extends Thread {
             //No hace falta control de concurrencia aquí porque todavía no está
             //compartido
             fOut.writeObject(new MsjString(TipoMensaje.MSJ_CONF_CONEXION, String.valueOf(puertoNuevoCliente)));
-            puertoNuevoCliente += 1;
 
             //Actualizamos las tablas
             this.flujos.nuevoHilo(id, fOut);
