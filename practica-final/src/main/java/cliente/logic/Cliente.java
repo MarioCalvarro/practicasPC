@@ -21,6 +21,8 @@ import java.util.Scanner;
 //Manejar bien las excpecptiones
 
 public class Cliente {
+    private static final int NUMERO_HILO = 0;
+
     private String nombre;
     private ControlOutput fOut;
     private boolean conexionTerminada;
@@ -43,16 +45,16 @@ public class Cliente {
     }
 
     public void consultarInformacion() throws IOException, ClassNotFoundException {
-        fOut.escribir(new MsjVacio(TipoMensaje.MSJ_LU));
+        fOut.escribir(NUMERO_HILO, new MsjVacio(TipoMensaje.MSJ_LU));
     }
 
     public void descargarInformacion(String fichero) throws IOException {
-        fOut.escribir(new MsjString(TipoMensaje.MSJ_PEDIR_FICHERO, fichero));
+        fOut.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PEDIR_FICHERO, fichero));
 
     }
 
     public void finalizarConexion() throws IOException {
-        fOut.escribir(new MsjVacio(TipoMensaje.MSJ_CERRAR_CONEXION));
+        fOut.escribir(NUMERO_HILO, new MsjVacio(TipoMensaje.MSJ_CERRAR_CONEXION));
         cs.close();
         conexionTerminada = true;
     }

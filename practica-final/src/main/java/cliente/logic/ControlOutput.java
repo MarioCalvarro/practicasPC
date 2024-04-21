@@ -16,8 +16,9 @@ public class ControlOutput {
         controladorOut = new LockRompeEmpate(NUM_LOCK);
     }
 
+    //ID: 0 hilo cliente, 1 OyenteServidor, 2 HiloReceptor
     public void escribir(int id, Object obj) {
-        controladorOut.takeLock(id);;
+        controladorOut.takeLock(id);
         try {
             datosOut.writeObject(obj);
             datosOut.flush();
