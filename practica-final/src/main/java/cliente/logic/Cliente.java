@@ -4,6 +4,7 @@ import mensaje.MsjString;
 import mensaje.MsjUsuario;
 import mensaje.MsjVacio;
 import mensaje.TipoMensaje;
+import servidor.logic.Servidor;
 import servidor.logic.Usuario;
 
 import javax.management.RuntimeErrorException;
@@ -45,8 +46,7 @@ public class Cliente {
     }
 
     private void Start() throws UnknownHostException, IOException, ClassNotFoundException {
-        //TODO: Cambiar puerto
-        cs = new Socket("localhost", 2024);
+        cs = new Socket("localhost", Servidor.PORT_NUMBER);
         fOut = new ObjectOutputStream(cs.getOutputStream());
         OyenteServidor hc = new OyenteServidor(nombre, cs);
         hc.run();
@@ -86,7 +86,7 @@ public class Cliente {
                 break;
             default:
                 //TODO
-                throw new RuntimeErrorException(null, "Numero no valido");
+                throw new RuntimeErrorException(null, "Número no válido");
         }
     }
 

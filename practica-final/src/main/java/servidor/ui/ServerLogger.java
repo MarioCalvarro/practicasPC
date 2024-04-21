@@ -12,7 +12,7 @@ public class ServerLogger {
 
     static {
         try {
-            fileHandler = new FileHandler("logfile.log");
+            fileHandler = new FileHandler("serverLogfile.log");
             logger.addHandler(fileHandler);
             SimpleFormatter formatter = new SimpleFormatter();
             fileHandler.setFormatter(formatter);

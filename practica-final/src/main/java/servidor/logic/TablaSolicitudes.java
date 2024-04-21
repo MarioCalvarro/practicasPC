@@ -22,7 +22,7 @@ public class TablaSolicitudes {
             solicitudesFichero.put(fichero, new ArrayDeque<String>());  //TODO: Otra implementación?
         }
         solicitudesFichero.get(fichero).add(receptor);
-        lock.realeaseLock(i);
+        lock.releaseLock(i);
     }
 
     public String getSiguienteReceptor(int i, String fichero) {
@@ -34,7 +34,7 @@ public class TablaSolicitudes {
             //No queremos una cola vacía ocupando espacio
             solicitudesFichero.remove(fichero);
         }
-        lock.realeaseLock(i);
+        lock.releaseLock(i);
         return rec;
     }
 }

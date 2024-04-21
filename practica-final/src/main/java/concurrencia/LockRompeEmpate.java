@@ -33,7 +33,7 @@ public class LockRompeEmpate implements Lock {
     }
 
     @Override
-    public void realeaseLock(int i) {
+    public void releaseLock(int i) {
         in[i].setValue(-1);
     }
 }

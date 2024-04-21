@@ -15,6 +15,8 @@ import java.util.Scanner;
 
 
 public class OyenteServidor extends Thread {
+    public static final int PORT_NUMBER = 2025;
+
     private boolean conexionTerminada;
     private String nombre;
     private ServerSocket ss;
@@ -37,9 +39,8 @@ public class OyenteServidor extends Thread {
 
     @Override
     public void run() {
-
         try {
-            ss = new ServerSocket(2025);
+            ss = new ServerSocket(PORT_NUMBER);
 
             while (!conexionTerminada) {
                 gestionarPeticiones();
@@ -73,7 +74,7 @@ public class OyenteServidor extends Thread {
                 lock.takeLock(MAX_PRIORITY);
                 fOut.writeObject(new MsjString(TipoMensaje.MSJ_PREPARADO_CS, ((MsjString) msj).getContenido() + " " + this.nombre + " " + this.puerto));
                 fOut.flush();
-                lock.realeaseLock(MAX_PRIORITY);
+                lock.releaseLock(MAX_PRIORITY);
                 try {
                     hiloEmisor.join();
                 } catch (InterruptedException e) {
@@ -98,7 +99,7 @@ public class OyenteServidor extends Thread {
                 lock.takeLock(MAX_PRIORITY);
                 fOut.writeObject(new MsjString(TipoMensaje.MSJ_FIN_EMISION_FICHERO, archivo));
                 fOut.flush();
-                lock.realeaseLock(MAX_PRIORITY);
+                lock.releaseLock(MAX_PRIORITY);
                 break;
 
             default:
