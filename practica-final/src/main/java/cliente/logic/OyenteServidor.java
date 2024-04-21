@@ -16,6 +16,8 @@ import java.util.Scanner;
 
 public class OyenteServidor extends Thread {
     public static final int PORT_NUMBER = 2025;
+    public static final int NUMERO_HILO = 1;
+
 
     private boolean conexionTerminada;
     private String nombre;
@@ -26,9 +28,10 @@ public class OyenteServidor extends Thread {
     private String puerto;
     private ControlOutput controlOutput;
 
-    public OyenteServidor(String nombre, Socket cs) {
+    public OyenteServidor(String nombre, Socket cs, ControlOutput controlOutput) {
         this.conexionTerminada = false;
         this.nombre = nombre;
+        this.controlOutput = controlOutput;
         try {
             fIn = new ObjectInputStream(cs.getInputStream());
             fOut = new ObjectOutputStream(cs.getOutputStream());
@@ -56,7 +59,7 @@ public class OyenteServidor extends Thread {
     }
 
     private void gestionarPeticiones() throws ClassNotFoundException, IOException {
-        Mensaje msj = (Mensaje) fIn.readObject();
+    	Mensaje msj = (Mensaje) fIn.readObject();
         switch (msj.getTipo()) {
             case MSJ_CONF_CONEXION:
                 System.out.println("Conectado el cliente " + nombre);
@@ -72,10 +75,7 @@ public class OyenteServidor extends Thread {
 
             case MSJ_PEDIR_FICHERO: // creamos nuevo hilo para controlar p2p
                 HiloEmisor hiloEmisor = new HiloEmisor(((MsjString) msj).getContenido().toString(), ss);
-                lock.takeLock(MAX_PRIORITY);
-                fOut.writeObject(new MsjString(TipoMensaje.MSJ_PREPARADO_CS, ((MsjString) msj).getContenido() + " " + this.nombre + " " + this.puerto));
-                fOut.flush();
-                lock.releaseLock(MAX_PRIORITY);
+                controlOutput.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PREPARADO_CS, ((MsjString) msj).getContenido() + " " + this.nombre + " " + this.puerto));
                 try {
                     hiloEmisor.join();
                 } catch (InterruptedException e) {
@@ -98,10 +98,7 @@ public class OyenteServidor extends Thread {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                lock.takeLock(MAX_PRIORITY);
-                fOut.writeObject(new MsjString(TipoMensaje.MSJ_FIN_EMISION_FICHERO, archivo));
-                fOut.flush();
-                lock.releaseLock(MAX_PRIORITY);
+                controlOutput.escribir(NUMERO_HILO,new MsjString(TipoMensaje.MSJ_FIN_EMISION_FICHERO, archivo));
                 break;
 
             default:
