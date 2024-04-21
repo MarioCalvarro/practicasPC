@@ -82,6 +82,7 @@ class OyenteCliente extends Thread {
                 case MSJ_LU:
                     ServerLogger.log("Recibida solicitud de envío de lista de usuarios de: " + this.id);
                     baseDatos.enviarUsuarios(id, flujos);
+                    ServerLogger.log("Enviada la lista de usuario a: " + this.id);
                     break;
                 case MSJ_PEDIR_FICHERO:
                     String nombreFichero = ((MsjString) msj).getContenido();
