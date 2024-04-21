@@ -22,92 +22,37 @@ import java.util.Scanner;
 
 public class Cliente {
     private String nombre;
-    private ObjectOutputStream fOut;
+    private ControlOutput fOut;
     private boolean conexionTerminada;
     private Usuario usuario;
     private Socket cs;
 
 
-    public Cliente(String nombre) {
+    public Cliente(String nombre) throws Exception {
         this.nombre = nombre;
         this.conexionTerminada = false;
         this.usuario = new Usuario(nombre, new HashSet<String>());
-    }
-
-    public void main(String args[]) throws UnknownHostException, IOException, ClassNotFoundException {
-        Cliente cliente = new Cliente(inicio());
-        cliente.Start();
-    }
-
-    private String inicio() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Bienvenido. Introduzca el nombre de usuario:");
-        return scanner.next();
-    }
-
-    private void Start() throws UnknownHostException, IOException, ClassNotFoundException {
         cs = new Socket("localhost", Servidor.PORT_NUMBER);
-        fOut = new ObjectOutputStream(cs.getOutputStream());
-        OyenteServidor hc = new OyenteServidor(nombre, cs);
-        hc.run();
-        fOut.writeObject(new MsjUsuario(TipoMensaje.MSJ_CONEXION, usuario));
-        fOut.flush();
+        ObjectOutputStream output = new ObjectOutputStream(cs.getOutputStream());
+        //Todavía no está compartido
+        output.writeObject(new MsjUsuario(TipoMensaje.MSJ_CONEXION, usuario)); output.flush();
 
-        while (!conexionTerminada) {
-            gestionarAcciones(pedirAcciones());
-        }
-        System.out.println("Has finalizado la conexión con el servidor.");
-        try {
-            hc.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        fOut = new ControlOutput(output);
+        OyenteServidor hc = new OyenteServidor(nombre, cs, fOut);
+        hc.start();
     }
 
-    private int pedirAcciones() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Elige la acción que deseas hacer: ");
-        System.out.println("1.Consultar información disponible en el sistema.");
-        System.out.println("2.Descargar información deseada.");
-        System.out.println("3.Terminar sesión.");
-        return Integer.parseInt(scanner.next());
+    public void consultarInformacion() throws IOException, ClassNotFoundException {
+        fOut.escribir(new MsjVacio(TipoMensaje.MSJ_LU));
     }
 
-    private void gestionarAcciones(int num) throws ClassNotFoundException, IOException {
-        switch (num) {
-            case 1:
-                consultarInformacion();
-                break;
-            case 2:
-                descargarInformacion();
-                break;
-            case 3:
-                finalizarConexion();
-                break;
-            default:
-                //TODO
-                throw new RuntimeErrorException(null, "Número no válido");
-        }
-    }
-
-    private void consultarInformacion() throws IOException, ClassNotFoundException {
-        fOut.writeObject(new MsjVacio(TipoMensaje.MSJ_LU));
-        fOut.flush();
-    }
-
-    private void descargarInformacion() throws IOException {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Introduce el nombre del fichero que deseas descargar: ");
-        String nombre = scanner.next();
-        fOut.writeObject(new MsjString(TipoMensaje.MSJ_PEDIR_FICHERO, nombre));
-        fOut.flush();
+    public void descargarInformacion(String fichero) throws IOException {
+        fOut.escribir(new MsjString(TipoMensaje.MSJ_PEDIR_FICHERO, fichero));
 
     }
 
-    private void finalizarConexion() throws IOException {
-        fOut.writeObject(new MsjVacio(TipoMensaje.MSJ_CERRAR_CONEXION));
-        fOut.flush();
-        fOut.close();
+    public void finalizarConexion() throws IOException {
+        fOut.escribir(new MsjVacio(TipoMensaje.MSJ_CERRAR_CONEXION));
         cs.close();
         conexionTerminada = true;
     }
