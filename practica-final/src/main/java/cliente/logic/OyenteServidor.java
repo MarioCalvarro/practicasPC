@@ -101,8 +101,8 @@ public class OyenteServidor extends Thread {
                 default:
             }
         } catch (Exception e) {
-            //TODO
             ClienteLogger.log("Fin de conexión con el servidor.");
+            this.interrupt();
         }
     }
 }
