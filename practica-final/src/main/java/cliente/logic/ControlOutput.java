@@ -1,7 +1,6 @@
 package cliente.logic;
 import concurrencia.Lock;
 import concurrencia.LockRompeEmpate;
-import servidor.ui.ServerLogger;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
@@ -16,7 +15,7 @@ public class ControlOutput {
         controladorOut = new LockRompeEmpate(NUM_LOCK);
     }
 
-    //ID: 0 hilo cliente, 1 OyenteServidor, 2 HiloReceptor
+    //TODO: ID multiples receptores
     public void escribir(int id, Object obj) throws IOException {      //TODO: Error fuera de rango?
         controladorOut.takeLock(id);
         datosOut.writeObject(obj);
