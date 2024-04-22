@@ -108,6 +108,11 @@ class OyenteCliente extends Thread {
             } catch (ClassNotFoundException | IOException e) {
                 ServerLogger.logError("Error al recibir un mensaje del cliente. Cerrando conexión.");
                 conexionCorrecta = false;
+                try {
+                    baseDatos.desconexionUsuario(this.id);
+                } catch (InterruptedException ee) {
+                    ServerLogger.logError("Error al desconectar el cliente '" + this.id + "'.");
+                }
                 return;
             }
 
@@ -120,7 +125,6 @@ class OyenteCliente extends Thread {
                     } catch (InterruptedException e) {
                         ServerLogger.logError("Error al enviar la lista de usuario a '" + this.id + "'. Cerrando conexión.");
                         conexionCorrecta = false;
-                        return;
                     }
                     break;
                 case MSJ_PEDIR_FICHERO:
@@ -154,11 +158,6 @@ class OyenteCliente extends Thread {
                     break;
                 case MSJ_CERRAR_CONEXION:
                     ServerLogger.log("El cliente '" + this.id + "' acaba de desconectarse. Actualizando base de datos.");
-                    try {
-                        baseDatos.desconexionUsuario(this.id);
-                    } catch (InterruptedException e) {
-                        ServerLogger.logError("Error al desconectar el cliente '" + this.id + "'.");
-                    }
                     conexionCorrecta = false;
                     break;
                 default:
@@ -166,6 +165,12 @@ class OyenteCliente extends Thread {
                     conexionCorrecta = false;
                     break;
             }
+        }
+
+        try {
+            baseDatos.desconexionUsuario(this.id);
+        } catch (InterruptedException e) {
+            ServerLogger.logError("Error al desconectar el cliente '" + this.id + "'.");
         }
     }
 
