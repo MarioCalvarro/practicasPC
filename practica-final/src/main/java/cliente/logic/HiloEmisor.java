@@ -13,7 +13,7 @@ import cliente.ui.ClienteLogger;
 
 public class HiloEmisor extends Thread {
     private Socket cs;
-    private FileInputStream fileInputStream;
+    private FileInputStream fileIn;
     private ObjectOutputStream fOut;
     private ObjectInputStream fIn;
     private String archivo;
@@ -30,19 +30,20 @@ public class HiloEmisor extends Thread {
             fOut = new ObjectOutputStream(cs.getOutputStream());
             fIn = new ObjectInputStream(cs.getInputStream());
 
-            fileInputStream = new FileInputStream(Cliente.RUTA_FICHEROS + archivo);
+            fileIn = new FileInputStream(Cliente.RUTA_FICHEROS + archivo);
             fOut.writeObject(new MsjVacio(TipoMensaje.MSJ_INICIO_EMISION_FICHERO));
             fOut.flush();
 
             // Crear buffer para lectura del archivo
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[8192];
             int bytesRead;
 
-
             // Leer el archivo y enviarlo por el socket
-            while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+            while ((bytesRead = fileIn.read(buffer)) > 0) {
                 fOut.write(buffer, 0, bytesRead);
+                fOut.flush();
             }
+            ClienteLogger.log("Enviado el fichero '" + archivo + "'.");
 
             Mensaje msj = (MsjVacio) fIn.readObject();
             if (msj.getTipo() != TipoMensaje.MSJ_CERRAR_CONEXION) {
@@ -50,7 +51,8 @@ public class HiloEmisor extends Thread {
             }
             fOut.close();
             fIn.close();
-            fileInputStream.close();
+            fileIn.close();
+            cs.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

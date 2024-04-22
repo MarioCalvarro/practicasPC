@@ -12,6 +12,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import cliente.ui.ClienteLogger;
+
 public class HiloReceptor extends Thread {
     private static final int NUMERO_HILO = 2;
     private String archivo;
@@ -51,6 +53,7 @@ public class HiloReceptor extends Thread {
             }
             fileOutputStream.close();
 
+            ClienteLogger.log("Recibido el fichero '" + archivo + "'.");
             fOut.writeObject(new MsjVacio(TipoMensaje.MSJ_CERRAR_CONEXION));
             fOut.flush();
             fIn.close();
