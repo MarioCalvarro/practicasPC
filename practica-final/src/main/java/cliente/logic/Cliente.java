@@ -51,7 +51,6 @@ public class Cliente {
         cs.close();
         hc.interrupt();
         hc.join();
-      
     }
 
     public String getNombre() {

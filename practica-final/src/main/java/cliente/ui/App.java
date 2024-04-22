@@ -17,19 +17,14 @@ public class App {
         String nombre = sc.next(); sc.nextLine();
         try {
             c = new Cliente(nombre);
-            while (!conexionTerminada) {
-                int accion = pedirAcciones();              
-    			gestionarAcciones(accion);		    
-            }
-            sc.close();
-            
-        } catch(IOException e) {
-            ClienteLogger.logError("No se ha podio escribir correctamente.");
-        } catch(InterruptedException e) {
-            ClienteLogger.logError("Se ha interrumpido la ejecución.");
-        } catch(ClassNotFoundException e) {
-	        ClienteLogger.logError("El objeto recibido por el socket no es correcto.");
+        } catch (ClassNotFoundException | IOException e) {
+            ClienteLogger.logError("Error al crear el cliente. Abortando.");
         }
+        while (!conexionTerminada) {
+            int accion = pedirAcciones();              
+            gestionarAcciones(accion);		    
+        }
+        sc.close();
     }
 
     private static int pedirAcciones() {
@@ -41,18 +36,30 @@ public class App {
         return res;
     }
     
-    private static void gestionarAcciones(int num) throws IOException, InterruptedException  {
+    private static void gestionarAcciones(int num)  {
         switch (num) {
             case 1:
-                c.consultarInformacion();
+                try {
+                    c.consultarInformacion();
+                } catch (IOException e) {
+                    ClienteLogger.logError("Error al consultar la lista de usuarios.");
+                }
                 break;
             case 2:
                 System.out.println("Introduzca el nombre del fichero que desea descargar: ");
                 String fichero = sc.nextLine();
-                c.descargarInformacion(fichero);
+                try {
+                    c.descargarInformacion(fichero);
+                } catch (IOException e) {
+                    ClienteLogger.logError("Error al descargar un fichero.");
+                }
                 break;
             case 3:
-                c.finalizarConexion();
+                try {
+                    c.finalizarConexion();
+                } catch (IOException | InterruptedException e) {
+                    ClienteLogger.logError("Error al finalizar la conexión con el servidor.");
+                }
                 conexionTerminada = true;
                 break;
             default:
