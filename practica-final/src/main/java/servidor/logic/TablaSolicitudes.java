@@ -16,7 +16,7 @@ public class TablaSolicitudes {
         control = new SemaforoRW();
     }
 
-    public void nuevaSolicitud(String fichero, String receptor) {
+    public void nuevaSolicitud(String fichero, String receptor) throws InterruptedException {
         control.request_write();
         if (solicitudesFichero.get(fichero) == null) {
             solicitudesFichero.put(fichero, new ArrayDeque<String>());
@@ -25,7 +25,7 @@ public class TablaSolicitudes {
         control.release_write();
     }
 
-    public String getSiguienteReceptor(String fichero) {
+    public String getSiguienteReceptor(String fichero) throws InterruptedException {
         String rec = null;
         control.request_write();
         try {

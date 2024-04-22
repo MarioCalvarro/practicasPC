@@ -18,13 +18,13 @@ public class TablaFlujos {
         controladorOut = new MonitorRW();
     }
 
-    public void nuevoHilo(String id, ObjectOutputStream out) {
+    public void nuevoHilo(String id, ObjectOutputStream out) throws InterruptedException {
         controladorOut.request_write();
         datosOut.put(id, out);
         controladorOut.release_write();
     }
 
-    public void escribir(String id, Object obj) {
+    public void escribir(String id, Object obj) throws InterruptedException {
         controladorOut.request_write();
         try {
             datosOut.get(id).writeObject(obj);

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.concurrent.ExecutionException;
 
 class OyenteCliente extends Thread {
     private volatile boolean conexionCorrecta;
@@ -73,12 +72,28 @@ class OyenteCliente extends Thread {
             //compartido
             fOut.writeObject(new MsjString(TipoMensaje.MSJ_CONF_CONEXION, String.valueOf(puertoNuevoCliente)));
         } catch (IOException e) {
-            ServerLogger.logError("Error al enviar el mensaje de confirmación de conexión.");
+            ServerLogger.logError("Error al enviar el mensaje de confirmación de conexión a '" + this.id + "'.");
+            conexionCorrecta = false;
+            return;
         }
 
         //Actualizamos las tablas
-        this.flujos.nuevoHilo(id, fOut);
-        this.baseDatos.conexionUsuario(user);
+        try {
+            this.flujos.nuevoHilo(id, fOut);
+        } catch (InterruptedException e) {
+            ServerLogger.logError("Error al crear el añadir el nuevo flujo de salida del cliente '" + this.id + "'.");
+            conexionCorrecta = false;
+            return;
+        }
+
+        try {
+            this.baseDatos.conexionUsuario(user);
+        } catch (InterruptedException e) {
+            ServerLogger.logError("Error al crear el añadir el nuevo usuario '" + this.id + "'.");
+            conexionCorrecta = false;
+            return;
+        }
+
         ServerLogger.log("La conexión ha sido establecida con el cliente '" + this.id + "'.");
     }
 
@@ -96,36 +111,62 @@ class OyenteCliente extends Thread {
             switch (msj.getTipo()) {
                 case MSJ_LU:
                     ServerLogger.log("Recibida solicitud de envío de lista de usuarios de '" + this.id + "'.");
-                    baseDatos.enviarUsuarios(id, flujos);
-                    ServerLogger.log("Enviada la lista de usuario a '" + this.id + "'.");
+                    try {
+                        baseDatos.enviarUsuarios(id, flujos);
+                        ServerLogger.log("Enviada la lista de usuario a '" + this.id + "'.");
+                    } catch (InterruptedException e) {
+                        ServerLogger.logError("Error al enviar la lista de usuario a '" + this.id + "'. Cerrando conexión.");
+                        conexionCorrecta = false;
+                        return;
+                    }
                     break;
                 case MSJ_PEDIR_FICHERO:
                     String nombreFichero = ((MsjString) msj).getContenido();
                     ServerLogger.log("Recibida solicitud de envío del fichero '" + nombreFichero + "' del cliente '" + this.id + "'.");
-                    solicitarFichero(nombreFichero);
+                    try {
+                        solicitarFichero(nombreFichero);
+                    } catch (InterruptedException e) {
+                        ServerLogger.logError("Error al reenviar la solicitud del fichero '" + nombreFichero + "' al emisor. Cerrando conexión.");
+                        conexionCorrecta = false;
+                    }
                     break;
                 case MSJ_PREPARADO_CS:
                     String ficheroIpPort = ((MsjString) msj).getContenido();
-                    enviarPreparadoSC(ficheroIpPort);
+                    try {
+                        enviarPreparadoSC(ficheroIpPort);
+                    } catch (InterruptedException e) {
+                        ServerLogger.logError("Error al enviar el mensaje 'PREPARADO_SC' al cliente receptor.");
+                        conexionCorrecta = false;
+                    }
                     break;
                 case MSJ_FIN_EMISION_FICHERO:
                     String fichero = ((MsjString) msj).getContenido();
                     ServerLogger.log("El cliente '" + this.id + "' acaba de completar la descarga del fichero '" + fichero + "'. Actualizando base de datos.");
-                    baseDatos.nuevoFicheroEnUser(this.id, fichero);
+                    try {
+                        baseDatos.nuevoFicheroEnUser(this.id, fichero);
+                    } catch (InterruptedException e) {
+                        ServerLogger.logError("Error al solicitar el fichero '" + fichero + "' al cliente emisor. Cerrando conexión.");
+                        conexionCorrecta = false;
+                    }
                     break;
                 case MSJ_CERRAR_CONEXION:
                     ServerLogger.log("El cliente '" + this.id + "' acaba de desconectarse. Actualizando base de datos.");
-                    baseDatos.desconexionUsuario(this.id);
+                    try {
+                        baseDatos.desconexionUsuario(this.id);
+                    } catch (InterruptedException e) {
+                        ServerLogger.logError("Error al desconectar el cliente '" + this.id + "'.");
+                    }
                     conexionCorrecta = false;
                     break;
                 default:
-                    ServerLogger.logError("El cliente '" + this.id + "' acaba de enviar un mensaje erróneo.");
+                    ServerLogger.logError("El cliente '" + this.id + "' acaba de enviar un mensaje erróneo. Desconectando.");
+                    conexionCorrecta = false;
                     break;
             }
         }
     }
 
-    private void solicitarFichero(String nombreFichero) {
+    private void solicitarFichero(String nombreFichero) throws InterruptedException {
         String nombreEmisor = baseDatos.getUsuarioConFichero(nombreFichero);
         if (nombreEmisor == null) {
             ServerLogger.logError("El fichero '" + nombreFichero + "' no se encuentra en la base de datos. Enviando 'Fichero inexistente' al cliente '" + this.id + "'.");
@@ -138,7 +179,7 @@ class OyenteCliente extends Thread {
         flujos.escribir(nombreEmisor, new MsjString(TipoMensaje.MSJ_PEDIR_FICHERO, nombreFichero));
     }
 
-    private void enviarPreparadoSC(String ficheroIpPort) {
+    private void enviarPreparadoSC(String ficheroIpPort) throws InterruptedException {
         //Separado: Nombre fichero preparado - IP emisor - Puerto emisor
         String[] separado = ficheroIpPort.split(" ");
         ServerLogger.log("El cliente '" + this.id + "' tiene preparado el fichero '" + separado[0] + "'.");
