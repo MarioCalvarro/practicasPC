@@ -111,8 +111,15 @@ public class OyenteServidor extends Thread {
                 String[] separado = mensaje.split(" ");
                 String archivo2 = separado[0]; String ip2 = separado[1]; String puerto = separado[2];
                 //Start está en el constructor
-                HiloReceptor hiloReceptor = new HiloReceptor(archivo2, ip2, puerto, controlOutput);
-                emisorReceptor.add(hiloReceptor);
+                HiloReceptor hiloReceptor;
+				try {
+					hiloReceptor = new HiloReceptor(archivo2, ip2, puerto, controlOutput);
+					emisorReceptor.add(hiloReceptor);
+				} catch (IOException e) {
+	                ClienteLogger.logError("Error al conectar con el receptor del fichero '" + archivo2 + "'. Cancelando.");
+	            }
+				
+	            
                 break;
 
             default:
