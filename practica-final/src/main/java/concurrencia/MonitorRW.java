@@ -4,13 +4,9 @@ public class MonitorRW implements ControlAcceso {
     int nr = 0, nw = 0;
 
     @Override
-    public synchronized void request_read() {
+    public synchronized void request_read() throws InterruptedException {
         while (nw > 0) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            wait();
         }
         nr += 1;
     }
@@ -25,13 +21,9 @@ public class MonitorRW implements ControlAcceso {
 
 
     @Override
-    public synchronized void request_write() {
+    public synchronized void request_write() throws InterruptedException {
         while (nr > 0 || nw > 0) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            wait();
         }
         nw += 1;
     }
