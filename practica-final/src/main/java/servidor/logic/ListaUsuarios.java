@@ -24,8 +24,10 @@ public class ListaUsuarios implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
+        String salto_linea = "";
         for (Usuario user : lista) {
-            sb.append(user).append('\n');
+            sb.append(salto_linea).append(user);
+            salto_linea = "\n";
         }
 
         return sb.toString();
