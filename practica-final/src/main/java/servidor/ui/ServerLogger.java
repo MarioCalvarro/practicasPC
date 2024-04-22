@@ -9,6 +9,7 @@ import java.util.logging.SimpleFormatter;
 public class ServerLogger {
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_RESET = "\u001B[0m";
 
     private static final Logger logger = Logger.getLogger(ServerLogger.class.getName());
     private static FileHandler fileHandler;
@@ -33,13 +34,13 @@ public class ServerLogger {
 
     public static void logWarning(String message) {
         synchronized (logger) {
-            logger.log(Level.WARNING, ANSI_YELLOW + message);
+            logger.log(Level.WARNING, ANSI_YELLOW + message + ANSI_RESET);
         }
     }
 
     public static void logError(String message) {
         synchronized (logger) {
-            logger.log(Level.SEVERE, ANSI_RED + message);
+            logger.log(Level.SEVERE, ANSI_RED + message + ANSI_RESET);
         }
     }
 }

@@ -20,7 +20,7 @@ public class OyenteServidor extends Thread {
     private String nombre;
     private ServerSocket ss;
     private ObjectInputStream fIn;
-    private String puerto;
+    private int puertoCliente;
     private ControlOutput controlOutput;
     private List<Thread> emisorReceptor;
 
@@ -36,7 +36,7 @@ public class OyenteServidor extends Thread {
             ClienteLogger.logError("No se ha recibido el mensaje 'MSJ_CONF_CONEXION'.");
             throw new RuntimeException();
         }
-        int puertoCliente = Integer.parseInt(((MsjString) msj).getContenido());
+        puertoCliente = Integer.parseInt(((MsjString) msj).getContenido());
         ClienteLogger.log("Creando 'ServerSocket' en el puerto " + String.valueOf(puertoCliente));
         ss = new ServerSocket(puertoCliente);
     }
@@ -87,7 +87,7 @@ public class OyenteServidor extends Thread {
                 String archivo = ((MsjString) msj).getContenido();
                 String ip = "localhost";
                 try {
-                    controlOutput.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PREPARADO_CS, archivo + " " + ip + " " + this.puerto));
+                    controlOutput.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PREPARADO_CS, archivo + " " + ip + " " + this.puertoCliente));
                 } catch (IOException e) {
                     ClienteLogger.logError("Error al enviar un mensaje 'MSJ_PREPARADO_CS' para el archivo '" + archivo + "'. Cerrando conexión.");
                     interrupt();
