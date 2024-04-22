@@ -6,6 +6,7 @@ import mensaje.MsjListaUsuarios;
 import mensaje.TipoMensaje;
 import servidor.ui.ServerLogger;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 public class BaseDatos {
     private static String RUTA_FICHERO_GUARDADO = "./servidor/basedatos.txt";
+    private static String RUTA_CARPETA_FICHERO_GUARDADO = "./servidor/";
 
     private Map<String, Usuario> datos;
     private ControlAcceso controlador;
@@ -104,7 +106,23 @@ public class BaseDatos {
             fileOut = new FileOutputStream(RUTA_FICHERO_GUARDADO);
         }
         catch (FileNotFoundException e) {
-            //TODO
+            File file = new File(RUTA_FICHERO_GUARDADO);
+            if (!file.exists()) {
+                try {
+                    File carpeta = new File(RUTA_CARPETA_FICHERO_GUARDADO);
+                    carpeta.mkdirs();
+                    file.createNewFile();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    ServerLogger.logError("Error al crear el fichero de base de datos.");
+                }
+            }
+            try {
+                fileOut = new FileOutputStream(RUTA_FICHERO_GUARDADO);
+            } catch (FileNotFoundException e1) {
+                // TODO Auto-generated catch block
+                ServerLogger.logError("Error al crear el fichero de base de datos.");
+            }
         }
         ObjectOutputStream out;
         try {
