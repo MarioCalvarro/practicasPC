@@ -6,17 +6,43 @@ import mensaje.MsjListaUsuarios;
 import mensaje.TipoMensaje;
 import servidor.ui.ServerLogger;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 public class BaseDatos {
+    private static String RUTA_FICHERO_GUARDADO = "./servidor/basedatos.txt";
+
     private Map<String, Usuario> datos;
     private ControlAcceso controlador;
 
     public BaseDatos() {
-        //TODO: Guardar información en un fichero
-        datos = new HashMap<>();
+        FileInputStream fileIn = null;
+        try {
+            fileIn = new FileInputStream(RUTA_FICHERO_GUARDADO);
+        }
+        catch (FileNotFoundException e) {
+            ServerLogger.log("No se ha encontrado ninguna base de datos anterior. Creando una nueva.");
+            datos = new HashMap<>();
+        }
+        ObjectInputStream in;
+        try {
+            in = new ObjectInputStream(fileIn);
+            this.datos = (Map<String, Usuario>) in.readObject();
+        } catch (Exception e) {
+            ServerLogger.logError("Error al abrir el fichero de entrada de la base de datos.");
+        }
         controlador = new SemaforoRW();
+        try {
+            fileIn.close();
+        } catch (IOException e) {
+            ServerLogger.logError("Error al cerrar el fichero de la base de datos.");
+        }
     }
 
     public void conexionUsuario(Usuario user) {
@@ -70,6 +96,24 @@ public class BaseDatos {
     }
 
     public void guardarDatos() {
-        //TODO
+        FileOutputStream fileOut = null;
+        try {
+            fileOut = new FileOutputStream(RUTA_FICHERO_GUARDADO);
+        }
+        catch (FileNotFoundException e) {
+            //TODO
+        }
+        ObjectOutputStream out;
+        try {
+            out = new ObjectOutputStream(fileOut);
+            out.writeObject(datos);
+        } catch (Exception e) {
+            ServerLogger.logError("Error al abrir el fichero de entrada de la base de datos.");
+        }
+        try {
+            fileOut.close();
+        } catch (IOException e) {
+            ServerLogger.logError("Error al cerrar el fichero de la base de datos.");
+        }
     }
 }

@@ -1,5 +1,6 @@
 package concurrencia;
 
+//TODO: Cambiar por uno que no necesite el número de procesos
 public class LockRompeEmpate implements Lock {
     private int N;
     private Entero[] in;
