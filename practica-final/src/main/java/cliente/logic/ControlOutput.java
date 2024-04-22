@@ -1,14 +1,16 @@
 package cliente.logic;
+
 import concurrencia.Lock;
 import concurrencia.LockRompeEmpate;
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 public class ControlOutput {
-	private static final int NUM_LOCK = 3;
+    private static final int NUM_LOCK = 3;
     private Lock controladorOut;
     private ObjectOutputStream datosOut;
-    
+
 
     public ControlOutput(ObjectOutputStream o) {
         datosOut = o;

@@ -14,15 +14,16 @@ public class App {
     public static void main(String[] args) {
         sc = new Scanner(System.in);
         System.out.println("Bienvenido. Introduzca el nombre de usuario: ");
-        String nombre = sc.next(); sc.nextLine();
+        String nombre = sc.next();
+        sc.nextLine();
         try {
             c = new Cliente(nombre);
         } catch (ClassNotFoundException | IOException e) {
             ClienteLogger.logError("Error al crear el cliente. Abortando.");
         }
         while (!conexionTerminada) {
-            int accion = pedirAcciones();              
-            gestionarAcciones(accion);		    
+            int accion = pedirAcciones();
+            gestionarAcciones(accion);
         }
         sc.close();
     }
@@ -32,11 +33,12 @@ public class App {
         System.out.println("1. Consultar información disponible en el sistema.");
         System.out.println("2. Descargar información deseada.");
         System.out.println("3. Terminar sesión.");
-        int res = sc.nextInt(); sc.nextLine();
+        int res = sc.nextInt();
+        sc.nextLine();
         return res;
     }
-    
-    private static void gestionarAcciones(int num)  {
+
+    private static void gestionarAcciones(int num) {
         switch (num) {
             case 1:
                 try {

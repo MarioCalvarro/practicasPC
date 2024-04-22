@@ -6,13 +6,7 @@ import mensaje.MsjListaUsuarios;
 import mensaje.TipoMensaje;
 import servidor.ui.ServerLogger;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,8 +23,7 @@ public class BaseDatos {
         FileInputStream fileIn = null;
         try {
             fileIn = new FileInputStream(RUTA_FICHERO_GUARDADO);
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             ServerLogger.log("No se ha encontrado ninguna base de datos anterior. Creando una nueva.");
             datos = new HashMap<>();
             return;
@@ -105,8 +98,7 @@ public class BaseDatos {
         FileOutputStream fileOut = null;
         try {
             fileOut = new FileOutputStream(RUTA_FICHERO_GUARDADO);
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             File file = new File(RUTA_FICHERO_GUARDADO);
             if (!file.exists()) {
                 try {

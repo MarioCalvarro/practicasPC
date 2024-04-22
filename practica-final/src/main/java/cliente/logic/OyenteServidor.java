@@ -1,5 +1,6 @@
 package cliente.logic;
 
+import cliente.ui.ClienteLogger;
 import mensaje.Mensaje;
 import mensaje.MsjListaUsuarios;
 import mensaje.MsjString;
@@ -12,8 +13,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import cliente.ui.ClienteLogger;
-
 
 public class OyenteServidor extends Thread {
     private static final int NUMERO_HILO = 1;
@@ -25,17 +24,17 @@ public class OyenteServidor extends Thread {
     private ControlOutput controlOutput;
     private List<Thread> emisorReceptor;
 
-    public OyenteServidor(String nombre, Socket cs, ControlOutput controlOutput) throws IOException, ClassNotFoundException  {
+    public OyenteServidor(String nombre, Socket cs, ControlOutput controlOutput) throws IOException, ClassNotFoundException {
         this.nombre = nombre;
         this.controlOutput = controlOutput;
         this.emisorReceptor = new ArrayList<>();
         Mensaje msj = null;
-        
+
         fIn = new ObjectInputStream(cs.getInputStream());
         msj = (Mensaje) fIn.readObject();
         if (msj.getTipo() != TipoMensaje.MSJ_CONF_CONEXION) {
-        	ClienteLogger.logError("No se ha recibido el mensaje 'MSJ_CONF_CONEXION'.");
-        	throw new RuntimeException();
+            ClienteLogger.logError("No se ha recibido el mensaje 'MSJ_CONF_CONEXION'.");
+            throw new RuntimeException();
         }
         int puertoCliente = Integer.parseInt(((MsjString) msj).getContenido());
         ClienteLogger.log("Creando 'ServerSocket' en el puerto " + String.valueOf(puertoCliente));
@@ -109,17 +108,19 @@ public class OyenteServidor extends Thread {
             case MSJ_PREPARADO_SC: // nombre fichero un string con dos palabras
                 String mensaje = ((MsjString) msj).getContenido();
                 String[] separado = mensaje.split(" ");
-                String archivo2 = separado[0]; String ip2 = separado[1]; String puerto = separado[2];
+                String archivo2 = separado[0];
+                String ip2 = separado[1];
+                String puerto = separado[2];
                 //Start está en el constructor
                 HiloReceptor hiloReceptor;
-				try {
-					hiloReceptor = new HiloReceptor(archivo2, ip2, puerto, controlOutput);
-					emisorReceptor.add(hiloReceptor);
-				} catch (IOException e) {
-	                ClienteLogger.logError("Error al conectar con el receptor del fichero '" + archivo2 + "'. Cancelando.");
-	            }
-				
-	            
+                try {
+                    hiloReceptor = new HiloReceptor(archivo2, ip2, puerto, controlOutput);
+                    emisorReceptor.add(hiloReceptor);
+                } catch (IOException e) {
+                    ClienteLogger.logError("Error al conectar con el receptor del fichero '" + archivo2 + "'. Cancelando.");
+                }
+
+
                 break;
 
             default:

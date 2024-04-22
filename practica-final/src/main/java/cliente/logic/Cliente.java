@@ -31,11 +31,26 @@ public class Cliente {
         cs = new Socket("localhost", Servidor.PORT_NUMBER);
         ObjectOutputStream output = new ObjectOutputStream(cs.getOutputStream());
         //Todavía no está compartido
-        output.writeObject(new MsjUsuario(TipoMensaje.MSJ_CONEXION, usuario)); output.flush();
+        output.writeObject(new MsjUsuario(TipoMensaje.MSJ_CONEXION, usuario));
+        output.flush();
 
         fOut = new ControlOutput(output);
         hc = new OyenteServidor(nombre, cs, fOut);
         hc.start();
+    }
+
+    private Set<String> getFicherosUsuario(String nombreUser) {
+        File carpetaUsuario = new File(RUTA_FICHEROS + nombreUser);
+        if (!carpetaUsuario.exists() || !carpetaUsuario.isDirectory()) {
+            carpetaUsuario.mkdirs();
+            return new HashSet<>();
+        }
+        Set<String> res = new HashSet<>();
+        File[] archivos = carpetaUsuario.listFiles();
+        for (File arc : archivos) {
+            res.add(arc.getName());
+        }
+        return res;
     }
 
     public void consultarInformacion() throws IOException {
@@ -55,19 +70,5 @@ public class Cliente {
 
     public String getNombre() {
         return nombre;
-    }
-
-    private Set<String> getFicherosUsuario(String nombreUser) {
-        File carpetaUsuario = new File(RUTA_FICHEROS + nombreUser);
-        if (!carpetaUsuario.exists() || !carpetaUsuario.isDirectory()) {
-            carpetaUsuario.mkdirs();
-            return new HashSet<>();
-        }
-        Set<String> res = new HashSet<>();
-        File[] archivos = carpetaUsuario.listFiles();
-        for (File arc : archivos) {
-            res.add(arc.getName());
-        }
-        return res;
     }
 }

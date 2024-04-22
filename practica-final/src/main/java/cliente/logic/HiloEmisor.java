@@ -1,17 +1,12 @@
 package cliente.logic;
 
+import cliente.ui.ClienteLogger;
 import mensaje.Mensaje;
 import mensaje.MsjVacio;
 import mensaje.TipoMensaje;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
-
-import cliente.ui.ClienteLogger;
 
 public class HiloEmisor extends Thread {
     private Socket cs;
@@ -24,17 +19,6 @@ public class HiloEmisor extends Thread {
         this.archivo = archivo;
         this.cs = cs;
         this.start();
-    }
-
-    private void cerrarConexion() {
-        try {
-            cs.close();
-            fileIn.close();
-            fOut.close();
-            fIn.close();
-        } catch (IOException e) {
-            ClienteLogger.logError("Error al cerrar el thread de emisión del fichero '" + archivo + "'.");
-        }
     }
 
     @Override
@@ -94,5 +78,16 @@ public class HiloEmisor extends Thread {
             ClienteLogger.logError("El receptor no ha indicado el cierre de la conexión.");
         }
         cerrarConexion();
+    }
+
+    private void cerrarConexion() {
+        try {
+            cs.close();
+            fileIn.close();
+            fOut.close();
+            fIn.close();
+        } catch (IOException e) {
+            ClienteLogger.logError("Error al cerrar el thread de emisión del fichero '" + archivo + "'.");
+        }
     }
 }

@@ -1,6 +1,9 @@
 package servidor.logic;
 
-import mensaje.*;
+import mensaje.Mensaje;
+import mensaje.MsjString;
+import mensaje.MsjUsuario;
+import mensaje.TipoMensaje;
 import servidor.ui.ServerLogger;
 
 import java.io.IOException;
@@ -59,7 +62,7 @@ class OyenteCliente extends Thread {
         if (msj.getTipo() != TipoMensaje.MSJ_CONEXION) {
             ServerLogger.logError("Error al intentar conectar con un cliente. No se ha recibido el mensaje de conexión.");
             conexionCorrecta = false;
-            return; 
+            return;
         }
 
         Usuario user = msj.getContenido();
