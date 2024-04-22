@@ -14,11 +14,6 @@ import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
 
-//Poner bien los lock de fin y fout
-//Poner bien los puertos
-//Mirar cómo comunicar que se ha terminado la conexion al oyente
-//Manejar bien las excepciones
-
 public class Cliente {
     protected static final String RUTA_FICHEROS = "./usuarios/";
     private static final int NUMERO_HILO = 0;
