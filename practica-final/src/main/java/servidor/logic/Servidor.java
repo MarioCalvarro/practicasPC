@@ -64,7 +64,9 @@ public class Servidor {
         } catch (InterruptedException e) {
             ServerLogger.logError("Error al cerrar un hilo.");
         }
-        ServerLogger.log("Todas las conexiones se han cerrado correctamente y el servidor va a terminar su ejecucción.");
+        ServerLogger.log("Todos las conexiones se han cerrado correctamente. Guardando base de datos.");
+        baseDatos.guardarDatos();
+        ServerLogger.log("Base de datos actualizada. El servidor va a terminar su ejecucción.");
     }
 
 

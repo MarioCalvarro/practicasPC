@@ -22,6 +22,8 @@ public class BaseDatos {
     private ControlAcceso controlador;
 
     public BaseDatos() {
+        controlador = new SemaforoRW();
+
         FileInputStream fileIn = null;
         try {
             fileIn = new FileInputStream(RUTA_FICHERO_GUARDADO);
@@ -29,15 +31,16 @@ public class BaseDatos {
         catch (FileNotFoundException e) {
             ServerLogger.log("No se ha encontrado ninguna base de datos anterior. Creando una nueva.");
             datos = new HashMap<>();
+            return;
         }
         ObjectInputStream in;
         try {
             in = new ObjectInputStream(fileIn);
             this.datos = (Map<String, Usuario>) in.readObject();
+
         } catch (Exception e) {
             ServerLogger.logError("Error al abrir el fichero de entrada de la base de datos.");
         }
-        controlador = new SemaforoRW();
         try {
             fileIn.close();
         } catch (IOException e) {
@@ -106,7 +109,9 @@ public class BaseDatos {
         ObjectOutputStream out;
         try {
             out = new ObjectOutputStream(fileOut);
+            controlador.request_read();
             out.writeObject(datos);
+            controlador.release_read();
         } catch (Exception e) {
             ServerLogger.logError("Error al abrir el fichero de entrada de la base de datos.");
         }
