@@ -35,14 +35,15 @@ public class BaseDatos {
             datos = new HashMap<>();
             return;
         }
+
         ObjectInputStream in;
         try {
             in = new ObjectInputStream(fileIn);
             this.datos = (Map<String, Usuario>) in.readObject();
-
         } catch (Exception e) {
             ServerLogger.logError("Error al abrir el fichero de entrada de la base de datos.");
         }
+
         try {
             fileIn.close();
         } catch (IOException e) {
@@ -133,6 +134,7 @@ public class BaseDatos {
         } catch (Exception e) {
             ServerLogger.logError("Error al abrir el fichero de entrada de la base de datos.");
         }
+
         try {
             fileOut.close();
         } catch (IOException e) {
