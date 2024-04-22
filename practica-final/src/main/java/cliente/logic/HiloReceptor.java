@@ -32,6 +32,18 @@ public class HiloReceptor extends Thread {
         this.start();
     }
 
+    private void cerrarConexion() {
+        try {
+            cs.close();
+            fOut.close();
+            fIn.close();
+            fileOutputStream.close();
+        } catch (IOException e) {
+            ClienteLogger.logError("Error al cerrar el thread de recepción del fichero '" + archivo + "'.");
+        }
+    }
+    
+
     @Override
     public void run() {
         // Crear buffer para escritura del archivo
@@ -42,26 +54,49 @@ public class HiloReceptor extends Thread {
         try {
             Mensaje inicio = (MsjVacio) fIn.readObject();
             if (inicio.getTipo() != TipoMensaje.MSJ_INICIO_EMISION_FICHERO) {
-                //TODO
-                throw new Exception();
-            }
-
+                ClienteLogger.logError("Error al recibir el mensaje de inicio de emisión del fichero '" + archivo + "'.");
+            	cerrarConexion();
+            	return;
+            } 
+        } catch (ClassNotFoundException | IOException e) {
+            ClienteLogger.logError("Error al leer el mensaje de inicio de emisión de fichero '" + archivo + "'.");
+            cerrarConexion();
+            return;
+        }   
+        try {
+            
             while ((bytesRead = fIn.read(buffer)) != -1) {
-                fileOutputStream.write(buffer, 0, bytesRead);
+                fileOutputStream.write(buffer, 0, bytesRead);    
             }
-            fileOutputStream.close();
-
+            
+        } catch (IOException e) {
+                ClienteLogger.logError("Error al recibir un tramo del fichero '" + archivo + "'.");
+                cerrarConexion();
+                return;
+       }
+       
+       try {      
             ClienteLogger.log("Recibido el fichero '" + archivo + "'.");
             fOut.writeObject(new MsjVacio(TipoMensaje.MSJ_CERRAR_CONEXION));
             fOut.flush();
-            fIn.close();
-            fOut.close();
-            cs.close();
-
+            
+       } catch (IOException e) {
+          ClienteLogger.logError("Error al escribir el mensaje de cierre de conexión.");
+          cerrarConexion();
+          return;
+       }
+       
+       cerrarConexion();
+      
+       try {
             controlOutput.escribir(NUMERO_HILO,new MsjString(TipoMensaje.MSJ_FIN_EMISION_FICHERO, archivo));
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+       } catch (IOException e) {
+           ClienteLogger.logError("Error al escribir el mensaje de fin de emisión del fichero '" + archivo + "'.");
+           cerrarConexion();
+           return;
+       }
     }
+       
+    
 }
+
