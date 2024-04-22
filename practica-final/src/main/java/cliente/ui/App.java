@@ -5,7 +5,6 @@ import cliente.logic.Cliente;
 import java.io.IOException;
 import java.util.Scanner;
 
-import javax.management.RuntimeErrorException;
 
 public class App {
     private static Scanner sc;
@@ -28,9 +27,9 @@ public class App {
             ClienteLogger.logError("No se ha podio escribir correctamente.");
         } catch(InterruptedException e) {
             ClienteLogger.logError("Se ha interrumpido la ejecución.");
-        } catch(Exception e) {
-            ClienteLogger.logError("Error.");
-        }      
+        } catch(ClassNotFoundException e) {
+	        ClienteLogger.logError("El objeto recibido por el socket no es correcto.");
+        }
     }
 
     private static int pedirAcciones() {

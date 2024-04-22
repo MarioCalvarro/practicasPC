@@ -29,7 +29,7 @@ public class Cliente {
     private Usuario usuario;
     private Socket cs;
 
-    public Cliente(String nombre) throws Exception {
+    public Cliente(String nombre) throws IOException, ClassNotFoundException {
         this.nombre = nombre;
         this.usuario = new Usuario(nombre, getFicherosUsuario(nombre));      //TODO ficheros dentro de una carpeta
 

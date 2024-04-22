@@ -5,6 +5,7 @@ import mensaje.MsjListaUsuarios;
 import mensaje.MsjString;
 import mensaje.TipoMensaje;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -24,7 +25,7 @@ public class OyenteServidor extends Thread {
     private ControlOutput controlOutput;
     private List<Thread> emisorReceptor;
 
-    public OyenteServidor(String nombre, Socket cs, ControlOutput controlOutput) throws Exception {
+    public OyenteServidor(String nombre, Socket cs, ControlOutput controlOutput) throws IOException, ClassNotFoundException  {
         this.nombre = nombre;
         this.controlOutput = controlOutput;
         this.emisorReceptor = new ArrayList<>();
@@ -33,8 +34,8 @@ public class OyenteServidor extends Thread {
         fIn = new ObjectInputStream(cs.getInputStream());
         msj = (Mensaje) fIn.readObject();
         if (msj.getTipo() != TipoMensaje.MSJ_CONF_CONEXION) {
-            //TODO
-            throw new Exception();
+        	ClienteLogger.logError("No se ha recibido el mensaje 'MSJ_CONF_CONEXION'.");
+        	throw new RuntimeException();
         }
         int puertoCliente = Integer.parseInt(((MsjString) msj).getContenido());
         ClienteLogger.log("Creando 'ServerSocket' en el puerto " + String.valueOf(puertoCliente));

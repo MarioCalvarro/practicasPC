@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
-
 import cliente.ui.ClienteLogger;
 
 public class HiloReceptor extends Thread {
@@ -23,7 +21,7 @@ public class HiloReceptor extends Thread {
     private ObjectOutputStream fOut;
     private ControlOutput controlOutput;
 
-    public HiloReceptor(String archivo, String ip, String puerto, ControlOutput cO) throws NumberFormatException, UnknownHostException, IOException {
+    public HiloReceptor(String archivo, String ip, String puerto, ControlOutput cO) throws  IOException {
         cs = new Socket(ip, Integer.parseInt(puerto));
         this.archivo = archivo;
         fileOutputStream = new FileOutputStream(Cliente.RUTA_FICHEROS + archivo);
