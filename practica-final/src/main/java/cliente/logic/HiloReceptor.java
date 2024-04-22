@@ -70,11 +70,7 @@ public class HiloReceptor extends Thread {
             fOut.flush();
         } catch (IOException e) {
             ClienteLogger.logError("Error al escribir el mensaje de cierre de conexión.");
-            cerrarConexion();
-            return;
         }
-
-        cerrarConexion();
 
         try {
             controlOutput.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_FIN_EMISION_FICHERO, archivo));
@@ -83,6 +79,7 @@ public class HiloReceptor extends Thread {
             cerrarConexion();
             return;
         }
+        cerrarConexion();
     }
 
     private void cerrarConexion() {

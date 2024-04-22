@@ -60,6 +60,7 @@ public class HiloEmisor extends Thread {
                 fOut.flush();
             }
             fOut.close();
+            fileIn.close();
         } catch (IOException e) {
             ClienteLogger.logError("Error al enviar un tramo del fichero '" + archivo + "'.");
             cerrarConexion();
@@ -69,6 +70,7 @@ public class HiloEmisor extends Thread {
 
         Mensaje msj;
         try {
+            //Mensaje de fin de cierre de emisión
             msj = (MsjVacio) fIn.readObject();
         } catch (ClassNotFoundException | IOException e) {
             ClienteLogger.logError("Error al recibir el mensaje de cierre de conexión con el receptor del fichero '" + archivo + "'.");
@@ -78,7 +80,12 @@ public class HiloEmisor extends Thread {
         if (msj.getTipo() != TipoMensaje.MSJ_CERRAR_CONEXION) {
             ClienteLogger.logError("El receptor no ha indicado el cierre de la conexión.");
         }
-        cerrarConexion();
+        try {
+            cs.close();
+            fIn.close();
+        } catch (IOException e) {
+            ClienteLogger.logError("Error al cerrar el thread de emisión del fichero '" + archivo + "'.");
+        }
     }
 
     private void cerrarConexion() {
