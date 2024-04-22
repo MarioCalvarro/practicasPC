@@ -59,6 +59,7 @@ public class HiloEmisor extends Thread {
                 fOut.write(buffer, 0, bytesRead);
                 fOut.flush();
             }
+            fOut.close();
         } catch (IOException e) {
             ClienteLogger.logError("Error al enviar un tramo del fichero '" + archivo + "'.");
             cerrarConexion();

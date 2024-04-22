@@ -119,8 +119,6 @@ public class OyenteServidor extends Thread {
                 } catch (IOException e) {
                     ClienteLogger.logError("Error al conectar con el receptor del fichero '" + archivo2 + "'. Cancelando.");
                 }
-
-
                 break;
 
             default:
