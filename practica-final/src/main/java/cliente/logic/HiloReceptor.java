@@ -17,16 +17,17 @@ import java.net.Socket;
 public class HiloReceptor extends Thread {
     private static final int NUMERO_HILO = 2;
     private String archivo;
+    private String id;
     private Socket cs;
     private ObjectInputStream fIn;
     private FileOutputStream fileOutputStream;
     private ObjectOutputStream fOut;
     private ControlOutput controlOutput;
 
-    public HiloReceptor(String archivo, String ip, String puerto, ControlOutput cO) throws IOException {
+    public HiloReceptor(String id, String archivo, String ip, String puerto, ControlOutput cO) throws IOException {
         cs = new Socket(ip, Integer.parseInt(puerto));
         this.archivo = archivo;
-        fileOutputStream = new FileOutputStream(Cliente.RUTA_FICHEROS + archivo);
+        fileOutputStream = new FileOutputStream(Cliente.RUTA_FICHEROS + id + "/" + archivo);
         this.controlOutput = cO;
 
         fIn = new ObjectInputStream(cs.getInputStream());

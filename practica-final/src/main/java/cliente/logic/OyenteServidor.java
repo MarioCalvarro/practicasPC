@@ -114,7 +114,7 @@ public class OyenteServidor extends Thread {
                 //Start está en el constructor
                 HiloReceptor hiloReceptor;
                 try {
-                    hiloReceptor = new HiloReceptor(nombre + "/" + archivo2, ip2, puerto, controlOutput);
+                    hiloReceptor = new HiloReceptor(nombre, archivo2, ip2, puerto, controlOutput);
                     emisorReceptor.add(hiloReceptor);
                 } catch (IOException e) {
                     ClienteLogger.logError("Error al conectar con el receptor del fichero '" + archivo2 + "'. Cancelando.");
