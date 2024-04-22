@@ -1,7 +1,8 @@
 package concurrencia;
 
+//TODO: Cambiar a reentrantlock
 public class MonitorRW implements ControlAcceso {
-    int nr = 0, nw = 0;
+    private volatile int nr = 0, nw = 0;
 
     @Override
     public synchronized void request_read() throws InterruptedException {
