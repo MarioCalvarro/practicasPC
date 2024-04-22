@@ -47,7 +47,7 @@ public class Servidor {
                 clientes.add(hc);
                 puertoNuevoCliente += 1;
             } catch (IOException e) {
-                ServerLogger.logError("Error al aceptar un nuevo cliente.");
+                ServerLogger.log("La conexión ha sido cerrada.");
             }
         }
         shutdown(hCierre);
@@ -57,14 +57,18 @@ public class Servidor {
         //Esperamos a que se cierren las conexiones ya activas
         try {
             hc.join();
-            for (OyenteCliente hCl : clientes) {
+        } catch (InterruptedException e) {
+            ServerLogger.logError("Error al cerrar el hilo de cierre.");
+        }
+        for (OyenteCliente hCl : clientes) {
+            try {
                 hCl.join();
                 ServerLogger.log("Se ha cerrado correctamente la conexión con el cliente " + hCl.getUserId());
+            } catch (InterruptedException e) {
+                ServerLogger.logError("Uno de los hilos ha sido interrumpido.");
             }
-        } catch (InterruptedException e) {
-            ServerLogger.logError("Error al cerrar un hilo.");
         }
-        ServerLogger.log("Todos las conexiones se han cerrado correctamente. Guardando base de datos.");
+        ServerLogger.log("Todos las conexiones han sido cerradas. Guardando base de datos.");
         baseDatos.guardarDatos();
         ServerLogger.log("Base de datos actualizada. El servidor va a terminar su ejecucción.");
     }
@@ -84,7 +88,7 @@ public class Servidor {
                     try {
                         ss.close();
                     } catch (IOException e) {
-                        ServerLogger.logError("Error al cerrar el 'ServerSocket'.");
+                        ServerLogger.logError("Error al cerrar 'ServerSocket'.");
                     }
                     scanner.close();
                 }

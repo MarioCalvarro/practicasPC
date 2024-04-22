@@ -43,8 +43,10 @@ public class Usuario implements Serializable {
         StringBuilder sb = new StringBuilder();
         sb.append("Usuario: ").append(id);
         sb.append(". Ficheros: ");
+        String espacio = "";
         for (String fichero : ficheros) {
-            sb.append(fichero).append(" ");
+            sb.append(espacio).append(fichero);
+            espacio = " ";
         }
         sb.append(". Conectado: ");
         if (conectado) {
