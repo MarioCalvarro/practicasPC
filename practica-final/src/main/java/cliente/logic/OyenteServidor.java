@@ -44,63 +44,80 @@ public class OyenteServidor extends Thread {
 
     @Override
     public void run() {
-        try {
-            while (!isInterrupted()) {
-                gestionarPeticiones();
-            }
+        while (!isInterrupted()) {
+            gestionarPeticiones();
+        }
 
-            for (Thread t : emisorReceptor) {
+        for (Thread t : emisorReceptor) {
+            try {
                 t.join();
+            } catch (InterruptedException e) {
+                ClienteLogger.logError("Error al cerrar uno de los hilos de descarga/envio de archivos del cliente '" + this.nombre + "'.");
             }
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
     }
 
     private void gestionarPeticiones() {
+        Mensaje msj;
         try {
-            Mensaje msj = (Mensaje) fIn.readObject();
+            msj = (Mensaje) fIn.readObject();
+        } catch (ClassNotFoundException | IOException e) {
+            ClienteLogger.logError("Error al recibir un mensaje del servidor. Cerrando conexión.");
+            interrupt();
+            return;
+        }
 
-            switch (msj.getTipo()) {
-                case MSJ_CONF_CONEXION:
-                    ClienteLogger.log("Conectado el cliente " + nombre);
-                    break;
+        switch (msj.getTipo()) {
+            case MSJ_CONF_CONEXION:
+                ClienteLogger.log("Conectado el cliente " + nombre);
+                break;
 
-                case MSJ_CONF_LU:
-                    String res = ((MsjListaUsuarios) msj).getContenido().toString();
-                    System.out.println("La información disponible en el sistema es:\n" + res);
-                    break;
+            case MSJ_CONF_LU:
+                String res = ((MsjListaUsuarios) msj).getContenido().toString();
+                System.out.println("La información disponible en el sistema es:\n" + res);
+                break;
 
-                case MSJ_FICH_INEX:
-                    ClienteLogger.logError("El fichero " + ((MsjString) msj).getContenido().toString() + " no está disponible.");
-                    break;
+            case MSJ_FICH_INEX:
+                ClienteLogger.logError("El fichero " + ((MsjString) msj).getContenido().toString() + " no está disponible.");
+                break;
 
-                case MSJ_PEDIR_FICHERO: // creamos nuevo hilo para controlar p2p
-                    //Esto bloqueará la llegada de nuevos mensajes hasta que el
-                    //receptor se conecte. Simplemente se irán almacenando
-                    controlOutput.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PREPARADO_CS, ((MsjString) msj).getContenido() + " " + this.nombre + " " + this.puerto));
+            case MSJ_PEDIR_FICHERO: // creamos nuevo hilo para controlar p2p
 
-                    Socket sEmisor = ss.accept();
+                //Esto bloqueará la llegada de nuevos mensajes hasta que el
+                //receptor se conecte. Simplemente se irán almacenando
+                String archivo = ((MsjString) msj).getContenido();
+                String ip = "localhost";
+                try {
+                    controlOutput.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PREPARADO_CS, archivo + " " + ip + " " + this.puerto));
+                } catch (IOException e) {
+                    ClienteLogger.logError("Error al enviar un mensaje 'MSJ_PREPARADO_CS' para el archivo '" + archivo + "'. Cerrando conexión.");
+                    interrupt();
+                    return;
+                }
+
+                Socket sEmisor;
+                try {
+                    sEmisor = ss.accept();
                     //Start está en el constructor
                     HiloEmisor hiloEmisor = new HiloEmisor(((MsjString) msj).getContenido().toString(), sEmisor);
                     emisorReceptor.add(hiloEmisor);
-                    break;
+                } catch (IOException e) {
+                    ClienteLogger.logError("Error al conectar con el receptor del fichero '" + archivo + "'. Cancelando.");
+                }
+                break;
 
-                case MSJ_PREPARADO_SC: // nombre fichero un string con dos palabras
-                    String mensaje = ((MsjString) msj).getContenido();
-                    String[] separado = mensaje.split(" ");
-                    String archivo = separado[0]; String ip = separado[1]; String puerto = separado[2];
-                    //Start está en el constructor
-                    HiloReceptor hiloReceptor = new HiloReceptor(archivo, ip, puerto, controlOutput);
-                    emisorReceptor.add(hiloReceptor);
-                    break;
+            case MSJ_PREPARADO_SC: // nombre fichero un string con dos palabras
+                String mensaje = ((MsjString) msj).getContenido();
+                String[] separado = mensaje.split(" ");
+                String archivo2 = separado[0]; String ip2 = separado[1]; String puerto = separado[2];
+                //Start está en el constructor
+                HiloReceptor hiloReceptor = new HiloReceptor(archivo2, ip2, puerto, controlOutput);
+                emisorReceptor.add(hiloReceptor);
+                break;
 
-                default:
-            }
-        } catch (Exception e) {
-            ClienteLogger.log("Fin de conexión con el servidor.");
-            this.interrupt();
+            default:
+                ClienteLogger.logError("Error al recibir un mensaje del servidor. Cerrando conexión.");
+                interrupt();
         }
     }
 }
