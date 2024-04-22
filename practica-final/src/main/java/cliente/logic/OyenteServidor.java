@@ -98,14 +98,14 @@ public class OyenteServidor extends Thread {
                 try {
                     sEmisor = ss.accept();
                     //Start está en el constructor
-                    HiloEmisor hiloEmisor = new HiloEmisor(((MsjString) msj).getContenido().toString(), sEmisor);
+                    HiloEmisor hiloEmisor = new HiloEmisor(nombre + "/" + archivo, sEmisor);
                     emisorReceptor.add(hiloEmisor);
                 } catch (IOException e) {
                     ClienteLogger.logError("Error al conectar con el receptor del fichero '" + archivo + "'. Cancelando.");
                 }
                 break;
 
-            case MSJ_PREPARADO_SC: // nombre fichero un string con dos palabras
+            case MSJ_PREPARADO_SC: // nombre fichero un string con tres palabras
                 String mensaje = ((MsjString) msj).getContenido();
                 String[] separado = mensaje.split(" ");
                 String archivo2 = separado[0];
@@ -114,7 +114,7 @@ public class OyenteServidor extends Thread {
                 //Start está en el constructor
                 HiloReceptor hiloReceptor;
                 try {
-                    hiloReceptor = new HiloReceptor(archivo2, ip2, puerto, controlOutput);
+                    hiloReceptor = new HiloReceptor(nombre + "/" + archivo2, ip2, puerto, controlOutput);
                     emisorReceptor.add(hiloReceptor);
                 } catch (IOException e) {
                     ClienteLogger.logError("Error al conectar con el receptor del fichero '" + archivo2 + "'. Cancelando.");

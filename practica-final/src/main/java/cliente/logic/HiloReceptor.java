@@ -10,6 +10,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.InputStream;
+import java.io.BufferedInputStream;
 import java.net.Socket;
 
 public class HiloReceptor extends Thread {
@@ -34,10 +36,6 @@ public class HiloReceptor extends Thread {
 
     @Override
     public void run() {
-        // Crear buffer para escritura del archivo
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-
         // Leer datos del socket y escribirlos en el archivo
         try {
             Mensaje inicio = (MsjVacio) fIn.readObject();
@@ -51,12 +49,15 @@ public class HiloReceptor extends Thread {
             cerrarConexion();
             return;
         }
-        try {
 
-            while ((bytesRead = fIn.read(buffer)) != -1) {
+        // Crear buffer para escritura del archivo
+        int bytesRead;
+        byte[] buffer = new byte[1024];
+        try {
+            InputStream byteIn = new BufferedInputStream(cs.getInputStream());
+            while ((bytesRead = fIn.read(buffer)) > 0) {
                 fileOutputStream.write(buffer, 0, bytesRead);
             }
-
         } catch (IOException e) {
             ClienteLogger.logError("Error al recibir un tramo del fichero '" + archivo + "'.");
             cerrarConexion();
@@ -67,7 +68,6 @@ public class HiloReceptor extends Thread {
             ClienteLogger.log("Recibido el fichero '" + archivo + "'.");
             fOut.writeObject(new MsjVacio(TipoMensaje.MSJ_CERRAR_CONEXION));
             fOut.flush();
-
         } catch (IOException e) {
             ClienteLogger.logError("Error al escribir el mensaje de cierre de conexión.");
             cerrarConexion();
@@ -95,7 +95,5 @@ public class HiloReceptor extends Thread {
             ClienteLogger.logError("Error al cerrar el thread de recepción del fichero '" + archivo + "'.");
         }
     }
-
-
 }
 
