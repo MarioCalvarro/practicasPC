@@ -50,7 +50,7 @@ public class BaseDatos {
         }
     }
 
-    public void conexionUsuario(Usuario user) {
+    public void conexionUsuario(Usuario user) throws InterruptedException {
         controlador.request_write();
         String id = user.getId();
         datos.put(id, user);
@@ -58,25 +58,25 @@ public class BaseDatos {
         controlador.release_write();
     }
 
-    public void desconexionUsuario(String id) {
+    public void desconexionUsuario(String id) throws InterruptedException {
         controlador.request_write();
         datos.get(id).desconectar();
         controlador.release_write();
     }
 
-    public void nuevoFicheroEnUser(String idUser, String fichero) {
+    public void nuevoFicheroEnUser(String idUser, String fichero) throws InterruptedException {
         controlador.request_write();
         datos.get(idUser).nuevoFichero(fichero);
         controlador.release_write();
     }
 
-    public void eliminarUsuario(String id, Usuario user) {
+    public void eliminarUsuario(String id, Usuario user) throws InterruptedException {
         controlador.request_write();
         datos.remove(id);
         controlador.release_write();
     }
 
-    public void enviarUsuarios(String id, TablaFlujos flujos) {
+    public void enviarUsuarios(String id, TablaFlujos flujos) throws InterruptedException {
         controlador.request_read();
         try {
             flujos.escribir(id, new MsjListaUsuarios(TipoMensaje.MSJ_CONF_LU, new ListaUsuarios(datos)));
@@ -86,7 +86,7 @@ public class BaseDatos {
         controlador.release_read();
     }
 
-    public String getUsuarioConFichero(String idFichero) {
+    public String getUsuarioConFichero(String idFichero) throws InterruptedException {
         String nombreUser = null;
         controlador.request_read();
         for (Usuario user : datos.values()) {
