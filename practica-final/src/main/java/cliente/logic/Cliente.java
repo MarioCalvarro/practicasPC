@@ -43,7 +43,7 @@ public class Cliente {
         hc.start();
     }
 
-    public void consultarInformacion() throws IOException, ClassNotFoundException {
+    public void consultarInformacion() throws IOException {
         fOut.escribir(NUMERO_HILO, new MsjVacio(TipoMensaje.MSJ_LU));
     }
 
@@ -51,16 +51,12 @@ public class Cliente {
         fOut.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PEDIR_FICHERO, fichero));
     }
 
-    public void finalizarConexion() throws IOException {
+    public void finalizarConexion() throws IOException, InterruptedException {
         fOut.escribir(NUMERO_HILO, new MsjVacio(TipoMensaje.MSJ_CERRAR_CONEXION));
         cs.close();
         hc.interrupt();
-        try {
-            hc.join();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        hc.join();
+      
     }
 
     public String getNombre() {

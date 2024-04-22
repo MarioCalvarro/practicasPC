@@ -20,28 +20,25 @@ public class OyenteServidor extends Thread {
     private String nombre;
     private ServerSocket ss;
     private ObjectInputStream fIn;
-    private int puertoCliente;
+    private String puerto;
     private ControlOutput controlOutput;
     private List<Thread> emisorReceptor;
 
-    public OyenteServidor(String nombre, Socket cs, ControlOutput controlOutput) {
+    public OyenteServidor(String nombre, Socket cs, ControlOutput controlOutput) throws Exception {
         this.nombre = nombre;
         this.controlOutput = controlOutput;
         this.emisorReceptor = new ArrayList<>();
         Mensaje msj = null;
-        try {
-            fIn = new ObjectInputStream(cs.getInputStream());
-            msj = (Mensaje) fIn.readObject();
-            if (msj.getTipo() != TipoMensaje.MSJ_CONF_CONEXION) {
-                //TODO
-                throw new Exception();
-            }
-            puertoCliente = Integer.parseInt(((MsjString) msj).getContenido());
-            ClienteLogger.log("Creando 'ServerSocket' en el puerto " + String.valueOf(puertoCliente));
-            ss = new ServerSocket(puertoCliente);
-        } catch (Exception e) {
-            e.printStackTrace();
+        
+        fIn = new ObjectInputStream(cs.getInputStream());
+        msj = (Mensaje) fIn.readObject();
+        if (msj.getTipo() != TipoMensaje.MSJ_CONF_CONEXION) {
+            //TODO
+            throw new Exception();
         }
+        int puertoCliente = Integer.parseInt(((MsjString) msj).getContenido());
+        ClienteLogger.log("Creando 'ServerSocket' en el puerto " + String.valueOf(puertoCliente));
+        ss = new ServerSocket(puertoCliente);
     }
 
     @Override
@@ -81,27 +78,20 @@ public class OyenteServidor extends Thread {
                 case MSJ_PEDIR_FICHERO: // creamos nuevo hilo para controlar p2p
                     //Esto bloqueará la llegada de nuevos mensajes hasta que el
                     //receptor se conecte. Simplemente se irán almacenando
-                    String fichero = ((MsjString) msj).getContenido();
-                    //TODO: Si no es localhost
-                    String ip = "localhost";
-                    controlOutput.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PREPARADO_CS, fichero + " " + ip + " " + this.puertoCliente));
-                    ClienteLogger.log("Recibido mensaje pedir fichero del fichero '" + fichero + "'.");
+                    controlOutput.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PREPARADO_CS, ((MsjString) msj).getContenido() + " " + this.nombre + " " + this.puerto));
 
                     Socket sEmisor = ss.accept();
-                    fichero = nombre + "/" + fichero;
                     //Start está en el constructor
-                    HiloEmisor hiloEmisor = new HiloEmisor(fichero, sEmisor);
+                    HiloEmisor hiloEmisor = new HiloEmisor(((MsjString) msj).getContenido().toString(), sEmisor);
                     emisorReceptor.add(hiloEmisor);
                     break;
 
                 case MSJ_PREPARADO_SC: // nombre fichero un string con dos palabras
                     String mensaje = ((MsjString) msj).getContenido();
                     String[] separado = mensaje.split(" ");
-                    String archivo = separado[0]; String ip2 = separado[1]; String puerto = separado[2];
+                    String archivo = separado[0]; String ip = separado[1]; String puerto = separado[2];
                     //Start está en el constructor
-                    ClienteLogger.log("Recibido mensaje preparado SC para el fichero '" + separado[0] + "'.");
-                    archivo = nombre + "/" + archivo;
-                    HiloReceptor hiloReceptor = new HiloReceptor(archivo, ip2, puerto, controlOutput);
+                    HiloReceptor hiloReceptor = new HiloReceptor(archivo, ip, puerto, controlOutput);
                     emisorReceptor.add(hiloReceptor);
                     break;
 

@@ -2,6 +2,7 @@ package cliente.ui;
 
 import cliente.logic.Cliente;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 import javax.management.RuntimeErrorException;
@@ -17,21 +18,19 @@ public class App {
         String nombre = sc.next(); sc.nextLine();
         try {
             c = new Cliente(nombre);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        while (!conexionTerminada) {
-            int accion = pedirAcciones();
-            try {
-                gestionarAcciones(accion);
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            while (!conexionTerminada) {
+                int accion = pedirAcciones();              
+    			gestionarAcciones(accion);		    
             }
-        }
-
-        sc.close();
+            sc.close();
+            
+        } catch(IOException e) {
+            ClienteLogger.logError("No se ha podio escribir correctamente.");
+        } catch(InterruptedException e) {
+            ClienteLogger.logError("Se ha interrumpido la ejecución.");
+        } catch(Exception e) {
+            ClienteLogger.logError("Error.");
+        }      
     }
 
     private static int pedirAcciones() {
@@ -43,7 +42,7 @@ public class App {
         return res;
     }
     
-    private static void gestionarAcciones(int num) throws Exception {
+    private static void gestionarAcciones(int num) throws IOException, InterruptedException  {
         switch (num) {
             case 1:
                 c.consultarInformacion();
@@ -58,8 +57,7 @@ public class App {
                 conexionTerminada = true;
                 break;
             default:
-                //TODO
-                throw new RuntimeErrorException(null, "Número no válido");
+                System.err.println("El número '" + num + "' no es válido.");
         }
     }
 }
