@@ -17,14 +17,10 @@ public class ControlOutput {
     }
 
     //ID: 0 hilo cliente, 1 OyenteServidor, 2 HiloReceptor
-    public void escribir(int id, Object obj) {      //TODO: Error fuera de rango?
+    public void escribir(int id, Object obj) throws IOException {      //TODO: Error fuera de rango?
         controladorOut.takeLock(id);
-        try {
-            datosOut.writeObject(obj);
-            datosOut.flush();
-        } catch (IOException e) {
-            ServerLogger.logError("Error al escribir un mensaje en el canal con el cliente '" + id + "'.");
-        }
+        datosOut.writeObject(obj);
+        datosOut.flush();
         controladorOut.releaseLock(id);
     }
 }
