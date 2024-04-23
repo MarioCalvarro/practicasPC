@@ -10,8 +10,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.InputStream;
-import java.io.BufferedInputStream;
 import java.net.Socket;
 
 public class HiloReceptor extends Thread {
@@ -56,7 +54,6 @@ public class HiloReceptor extends Thread {
         int bytesRead;
         byte[] buffer = new byte[1024];
         try {
-            InputStream byteIn = new BufferedInputStream(cs.getInputStream());
             while ((bytesRead = fIn.read(buffer)) > 0) {
                 fileOutputStream.write(buffer, 0, bytesRead);
             }
