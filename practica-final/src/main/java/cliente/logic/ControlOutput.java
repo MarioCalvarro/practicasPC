@@ -18,7 +18,7 @@ public class ControlOutput {
     }
 
     //TODO: ID multiples receptores
-    public void escribir(int id, Object obj) throws IOException {      //TODO: Error fuera de rango?
+    public void escribir(int id, Object obj) throws IOException {
         controladorOut.takeLock(id);
         datosOut.writeObject(obj);
         datosOut.flush();
