@@ -1,0 +1,45 @@
+1)
+  - Sin base de datos
+  - Un emisor, un archivo
+  - Un receptor, sin archivo
+  * Creamos servidor, emisor y receptor
+  * Emisor pide lista de usuarios
+  * Receptor pide el archivo
+  * Emisor vuelve a pedir lista de usuarios
+
+  * RESULTADO: FALLIDO. El emisor recibe una lista de usuarios desactualizada.
+
+2)
+  - Con base de datos
+  - Un emisor, un archivo
+  - Un receptor, con el archivo (no conectado)
+  - Un nuevo receptor, no archivo
+  * Creamos servidor, emisor y nuevo receptor
+  * Emisor pide lista de usuarios
+  * Nuevo Receptor pide el archivo
+  * Emisor vuelve a pedir lista de usuarios
+
+  * RESULTADO: FALLIDO. El emisor recibe una lista de usuarios desactualizada.
+
+
+3)
+  - Con base de datos
+  - Un emisor, un archivo
+  - Dos receptores, con el archivo (no conectados)
+  - Un nuevo receptor, no archivo
+  * Creamos servidor, emisor y nuevo receptor
+  * Emisor pide lista de usuarios
+  * Nuevo Receptor pide el archivo
+  * Nuevo Receptor vuelve a pedir lista de usuarios
+
+  * RESULTADO: CORRECTO.
+
+4) CON DEBUGGER
+  - Sin base de datos
+  - Un emisor, un archivo
+  - Un receptor, sin archivo
+  * Creamos servidor, emisor y receptor
+  * Emisor pide lista de usuarios
+  * Receptor pide el archivo
+  * Emisor vuelve a pedir lista de usuarios
+
