@@ -23,12 +23,14 @@ public class OyenteServidor extends Thread {
     private int puertoCliente;
     private ControlOutput controlOutput;
     private List<Thread> emisorReceptor;
+    private int numeroHiloReceptor;
 
     public OyenteServidor(String nombre, Socket cs, ControlOutput controlOutput) throws IOException, ClassNotFoundException {
         this.nombre = nombre;
         this.controlOutput = controlOutput;
         this.emisorReceptor = new ArrayList<>();
         Mensaje msj = null;
+        this.numeroHiloReceptor = NUMERO_HILO + 1;
 
         fIn = new ObjectInputStream(cs.getInputStream());
         msj = (Mensaje) fIn.readObject();
@@ -114,8 +116,9 @@ public class OyenteServidor extends Thread {
                 //Start está en el constructor
                 HiloReceptor hiloReceptor;
                 try {
-                    hiloReceptor = new HiloReceptor(nombre, archivo2, ip2, puerto, controlOutput);
+                    hiloReceptor = new HiloReceptor(nombre, archivo2, ip2, puerto, controlOutput, numeroHiloReceptor);
                     emisorReceptor.add(hiloReceptor);
+                    numeroHiloReceptor += 1;
                 } catch (IOException e) {
                     ClienteLogger.logError("Error al conectar con el receptor del fichero '" + archivo2 + "'. Cancelando.");
                 }

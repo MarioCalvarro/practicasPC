@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 public class ControlOutput {
-    private static final int NUM_LOCK = 3;
+    private static final int NUM_LOCK = 3000; //TODO
     private Lock controladorOut;
     private ObjectOutputStream datosOut;
 
