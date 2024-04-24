@@ -20,14 +20,16 @@ public class HiloReceptor extends Thread {
     private FileOutputStream fileOutputStream;
     private ObjectOutputStream fOut;
     private ControlOutput controlOutput;
+    private GestionFicheros gestion;
 
 
-    public HiloReceptor(String id, String archivo, String ip, String puerto, ControlOutput cO, int numHilo) throws IOException {
+    public HiloReceptor(String id, String archivo, String ip, String puerto, ControlOutput cO, int numHilo, GestionFicheros gestion) throws IOException {
         cs = new Socket(ip, Integer.parseInt(puerto));
         this.archivo = archivo;
         fileOutputStream = new FileOutputStream(Cliente.RUTA_FICHEROS + id + "/" + archivo);
         this.controlOutput = cO;
         this.numHilo = numHilo;
+        this.gestion = gestion;
 
         fIn = new ObjectInputStream(cs.getInputStream());
         fOut = new ObjectOutputStream(cs.getOutputStream());
@@ -69,6 +71,14 @@ public class HiloReceptor extends Thread {
             fOut.flush();
         } catch (IOException e) {
             ClienteLogger.logError("Error al escribir el mensaje de cierre de conexión.");
+        }
+        
+        try {
+        	if(!gestion.comprobarExistencia(archivo)) {
+        		gestion.addFichero(archivo);
+        	}
+        } catch (InterruptedException e) {
+            ClienteLogger.logError("Error al añadir el fichero.");
         }
 
         try {
