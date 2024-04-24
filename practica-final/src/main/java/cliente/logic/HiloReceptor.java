@@ -10,25 +10,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.InputStream;
-import java.io.BufferedInputStream;
 import java.net.Socket;
 
 public class HiloReceptor extends Thread {
-    private static final int NUMERO_HILO = 2;
+    private int numHilo;
     private String archivo;
-    private String id;
     private Socket cs;
     private ObjectInputStream fIn;
     private FileOutputStream fileOutputStream;
     private ObjectOutputStream fOut;
     private ControlOutput controlOutput;
 
-    public HiloReceptor(String id, String archivo, String ip, String puerto, ControlOutput cO) throws IOException {
+
+    public HiloReceptor(String id, String archivo, String ip, String puerto, ControlOutput cO, int numHilo) throws IOException {
         cs = new Socket(ip, Integer.parseInt(puerto));
         this.archivo = archivo;
         fileOutputStream = new FileOutputStream(Cliente.RUTA_FICHEROS + id + "/" + archivo);
         this.controlOutput = cO;
+        this.numHilo = numHilo;
 
         fIn = new ObjectInputStream(cs.getInputStream());
         fOut = new ObjectOutputStream(cs.getOutputStream());
@@ -55,7 +54,6 @@ public class HiloReceptor extends Thread {
         int bytesRead;
         byte[] buffer = new byte[1024];
         try {
-            InputStream byteIn = new BufferedInputStream(cs.getInputStream());
             while ((bytesRead = fIn.read(buffer)) > 0) {
                 fileOutputStream.write(buffer, 0, bytesRead);
             }
@@ -74,7 +72,7 @@ public class HiloReceptor extends Thread {
         }
 
         try {
-            controlOutput.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_FIN_EMISION_FICHERO, archivo));
+            controlOutput.escribir(numHilo, new MsjString(TipoMensaje.MSJ_FIN_EMISION_FICHERO, archivo));
         } catch (IOException e) {
             ClienteLogger.logError("Error al escribir el mensaje de fin de emisión del fichero '" + archivo + "'.");
             cerrarConexion();

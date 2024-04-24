@@ -24,13 +24,15 @@ public class OyenteServidor extends Thread {
     private String puerto;
     private ControlOutput controlOutput;
     private List<Thread> emisorReceptor;
+    private int numeroHiloReceptor;
 
     public OyenteServidor(String nombre, Socket cs, ControlOutput controlOutput) throws IOException, ClassNotFoundException  {
         this.nombre = nombre;
         this.controlOutput = controlOutput;
         this.emisorReceptor = new ArrayList<>();
         Mensaje msj = null;
-        
+        this.numeroHiloReceptor = NUMERO_HILO + 1;
+
         fIn = new ObjectInputStream(cs.getInputStream());
         msj = (Mensaje) fIn.readObject();
         if (msj.getTipo() != TipoMensaje.MSJ_CONF_CONEXION) {
@@ -58,7 +60,7 @@ public class OyenteServidor extends Thread {
     }
 
     private void gestionarPeticiones() {
-        Mensaje msj;
+        Mensaje msj = null;
         try {
             msj = (Mensaje) fIn.readObject();
         } catch (ClassNotFoundException | IOException e) {
@@ -112,14 +114,13 @@ public class OyenteServidor extends Thread {
                 String archivo2 = separado[0]; String ip2 = separado[1]; String puerto = separado[2];
                 //Start está en el constructor
                 HiloReceptor hiloReceptor;
-				try { 
-					hiloReceptor = new HiloReceptor(archivo2, ip2, puerto, controlOutput);
-					emisorReceptor.add(hiloReceptor);
-				} catch (IOException e) {
-	                ClienteLogger.logError("Error al conectar con el receptor del fichero '" + archivo2 + "'. Cancelando.");
-	            }
-				
-	            
+                try {
+                    hiloReceptor = new HiloReceptor(nombre, archivo2, ip2, puerto, controlOutput, numeroHiloReceptor);
+                    emisorReceptor.add(hiloReceptor);
+                    numeroHiloReceptor += 1;
+                } catch (IOException e) {
+                    ClienteLogger.logError("Error al conectar con el receptor del fichero '" + archivo2 + "'. Cancelando.");
+                }
                 break;
 
             default:

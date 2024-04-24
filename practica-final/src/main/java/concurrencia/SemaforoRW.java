@@ -4,7 +4,7 @@ import java.util.concurrent.Semaphore;
 
 public class SemaforoRW implements ControlAcceso {
     private Semaphore e, r, w;
-    private int nw, nr, dr, dw;
+    private volatile int nw, nr, dr, dw;
 
     public SemaforoRW() {
         e = new Semaphore(1, true);
@@ -20,7 +20,7 @@ public class SemaforoRW implements ControlAcceso {
     public void request_read() throws InterruptedException {
         //Despertar en cadena
         e.acquire();
-        if (nw > 0) {
+        if (nw > 0 || dw > 0) {
             dr += 1;
             e.release();
             r.acquire();      //Paso de testigo e
@@ -28,7 +28,7 @@ public class SemaforoRW implements ControlAcceso {
         nr += 1;
         if (dr > 0) {
             dr -= 1;
-            r.acquire();      //Paso de testigo e
+            r.release();      //Paso de testigo e
         } else {    //Ultimo reader
             e.release();
         }

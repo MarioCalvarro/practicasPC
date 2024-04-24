@@ -6,7 +6,7 @@ import java.util.Set;
 public class Usuario implements Serializable {
     private String id;
     private Set<String> ficheros;
-    private boolean conectado;
+    private volatile boolean conectado;
 
     public Usuario(String id, Set<String> ficheros) {
         this.id = id;
