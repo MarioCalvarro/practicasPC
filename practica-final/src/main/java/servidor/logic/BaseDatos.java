@@ -107,14 +107,13 @@ public class BaseDatos {
                     carpeta.mkdirs();
                     file.createNewFile();
                 } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    ServerLogger.logError("Error al crear el fichero de base de datos.");
+                    ServerLogger.logError("Error al crear el fichero de base de datos. Cancelando.");
+                    return;
                 }
             }
             try {
                 fileOut = new FileOutputStream(RUTA_FICHERO_GUARDADO);
             } catch (FileNotFoundException e1) {
-                // TODO Auto-generated catch block
                 ServerLogger.logError("Error al crear el fichero de base de datos.");
             }
         }

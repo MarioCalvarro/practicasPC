@@ -64,8 +64,11 @@ public class OyenteServidor extends Thread {
         Mensaje msj = null;
         try {
             msj = (Mensaje) fIn.readObject();
-        } catch (ClassNotFoundException | IOException e) {
+        } catch (ClassNotFoundException e) {
             ClienteLogger.logError("Error al recibir un mensaje del servidor. Cerrando conexión.");
+            interrupt();
+            return;
+        } catch (IOException e) {
             interrupt();
             return;
         }

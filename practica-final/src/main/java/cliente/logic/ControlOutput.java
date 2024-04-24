@@ -16,11 +16,17 @@ public class ControlOutput {
         controladorOut = new LockTicket();
     }
 
-    //TODO: ID multiples receptores
+    //TODO: Lock
     public void escribir(int id, Object obj) throws IOException {
         controladorOut.takeLock();
         datosOut.writeObject(obj);
         datosOut.flush();
+        controladorOut.releaseLock();
+    }
+
+    public void cerrar() throws IOException {
+        controladorOut.takeLock();
+        datosOut.close();
         controladorOut.releaseLock();
     }
 }

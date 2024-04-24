@@ -79,8 +79,7 @@ public class Cliente {
 
     public void finalizarConexion() throws IOException, InterruptedException {
         fOut.escribir(NUMERO_HILO, new MsjVacio(TipoMensaje.MSJ_CERRAR_CONEXION));
-        cs.close();
-        hc.interrupt();
+        fOut.cerrar();      //Cerramos el socket
         hc.join();
     }
 
