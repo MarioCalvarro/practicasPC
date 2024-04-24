@@ -12,7 +12,6 @@ public class GestionFicheros {
     public GestionFicheros(Set<String> ficheros) {
         controlador = new MonitorRW();
         this.ficheros = ficheros;
-
     }
 
     public boolean comprobarExistencia(String s) throws InterruptedException {

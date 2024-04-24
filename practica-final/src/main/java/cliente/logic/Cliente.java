@@ -38,7 +38,7 @@ public class Cliente {
         output.flush();
 
         fOut = new ControlOutput(output);
-        hc = new OyenteServidor(nombre, cs, fOut, ficherosUsuario);
+        hc = new OyenteServidor(nombre, cs, fOut, ficheros);
         hc.start();
     }
 
