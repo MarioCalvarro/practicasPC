@@ -40,7 +40,7 @@ public class OyenteServidor extends Thread {
             ClienteLogger.logError("No se ha recibido el mensaje 'MSJ_CONF_CONEXION'.");
             throw new RuntimeException();
         }
-        int puerto= Integer.parseInt(((MsjString) msj).getContenido());
+        this.puerto= Integer.parseInt(((MsjString) msj).getContenido());
         ClienteLogger.log("Creando 'ServerSocket' en el puerto " + String.valueOf(puerto));
         ss = new ServerSocket(puerto);
     }
@@ -103,7 +103,7 @@ public class OyenteServidor extends Thread {
                 try {
                     sEmisor = ss.accept();
                     //Start está en el constructor
-                    HiloEmisor hiloEmisor = new HiloEmisor(((MsjString) msj).getContenido().toString(), sEmisor);
+                    HiloEmisor hiloEmisor = new HiloEmisor(nombre + "/" + archivo, sEmisor);
                     emisorReceptor.add(hiloEmisor);
                 } catch (IOException e) {
                     ClienteLogger.logError("Error al conectar con el receptor del fichero '" + archivo + "'. Cancelando.");
@@ -113,9 +113,7 @@ public class OyenteServidor extends Thread {
             case MSJ_PREPARADO_SC: // nombre fichero un string con dos palabras
                 String mensaje = ((MsjString) msj).getContenido();
                 String[] separado = mensaje.split(" ");
-                String archivo2 = separado[0];
-                String ip2 = separado[1];
-                String puerto = separado[2];
+                String archivo2 = separado[0]; String ip2 = separado[1]; String puerto = separado[2];
                 //Start está en el constructor
                 HiloReceptor hiloReceptor;
                 try {
