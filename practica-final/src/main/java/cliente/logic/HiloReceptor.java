@@ -72,11 +72,11 @@ public class HiloReceptor extends Thread {
         } catch (IOException e) {
             ClienteLogger.logError("Error al escribir el mensaje de cierre de conexión.");
         }
-        
+
         try {
-        	if(!gestion.comprobarExistencia(archivo)) {
-        		gestion.addFichero(archivo);
-        	}
+            if (!gestion.comprobarExistencia(archivo)) {
+                gestion.addFichero(archivo);
+            }
         } catch (InterruptedException e) {
             ClienteLogger.logError("Error al añadir el fichero.");
         }

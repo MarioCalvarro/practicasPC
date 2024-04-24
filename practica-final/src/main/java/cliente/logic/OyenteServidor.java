@@ -1,5 +1,6 @@
 package cliente.logic;
 
+import cliente.ui.ClienteLogger;
 import mensaje.Mensaje;
 import mensaje.MsjString;
 import mensaje.TipoMensaje;
@@ -10,8 +11,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-
-import cliente.ui.ClienteLogger;
 
 
 public class OyenteServidor extends Thread {
@@ -26,7 +25,7 @@ public class OyenteServidor extends Thread {
     private int numeroHiloReceptor;
     private GestionFicheros ficheros;
 
-    public OyenteServidor(String nombre, Socket cs, ControlOutput controlOutput, GestionFicheros ficheros) throws IOException, ClassNotFoundException  {
+    public OyenteServidor(String nombre, Socket cs, ControlOutput controlOutput, GestionFicheros ficheros) throws IOException, ClassNotFoundException {
         this.nombre = nombre;
         this.controlOutput = controlOutput;
         this.emisorReceptor = new ArrayList<>();
@@ -38,8 +37,8 @@ public class OyenteServidor extends Thread {
         fIn = new ObjectInputStream(cs.getInputStream());
         msj = (Mensaje) fIn.readObject();
         if (msj.getTipo() != TipoMensaje.MSJ_CONF_CONEXION) {
-        	ClienteLogger.logError("No se ha recibido el mensaje 'MSJ_CONF_CONEXION'.");
-        	throw new RuntimeException();
+            ClienteLogger.logError("No se ha recibido el mensaje 'MSJ_CONF_CONEXION'.");
+            throw new RuntimeException();
         }
         int puertoCliente = Integer.parseInt(((MsjString) msj).getContenido());
         ClienteLogger.log("Creando 'ServerSocket' en el puerto " + String.valueOf(puertoCliente));
@@ -86,7 +85,7 @@ public class OyenteServidor extends Thread {
                 break;
 
             case MSJ_PEDIR_FICHERO: // creamos nuevo hilo para controlar p2p
-                
+
                 //Esto bloqueará la llegada de nuevos mensajes hasta que el
                 //receptor se conecte. Simplemente se irán almacenando
                 String archivo = ((MsjString) msj).getContenido();
@@ -123,7 +122,9 @@ public class OyenteServidor extends Thread {
             case MSJ_PREPARADO_SC: // nombre fichero un string con dos palabras
                 String mensaje = ((MsjString) msj).getContenido();
                 String[] separado = mensaje.split(" ");
-                String archivo2 = separado[0]; String ip2 = separado[1]; String puerto = separado[2];
+                String archivo2 = separado[0];
+                String ip2 = separado[1];
+                String puerto = separado[2];
                 //Start está en el constructor
                 HiloReceptor hiloReceptor;
                 try {
