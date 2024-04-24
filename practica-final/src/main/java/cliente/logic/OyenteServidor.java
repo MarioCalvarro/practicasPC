@@ -1,7 +1,6 @@
 package cliente.logic;
 
 import mensaje.Mensaje;
-import mensaje.MsjListaUsuarios;
 import mensaje.MsjString;
 import mensaje.TipoMensaje;
 
@@ -75,7 +74,7 @@ public class OyenteServidor extends Thread {
                 break;
 
             case MSJ_CONF_LU:
-                String res = ((MsjListaUsuarios) msj).getContenido().toString();
+                String res = ((MsjString) msj).getContenido();
                 System.out.println("La información disponible en el sistema es:\n" + res);
                 break;
 

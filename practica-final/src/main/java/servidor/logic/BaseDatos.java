@@ -2,7 +2,7 @@ package servidor.logic;
 
 import concurrencia.ControlAcceso;
 import concurrencia.SemaforoRW;
-import mensaje.MsjListaUsuarios;
+import mensaje.MsjString;
 import mensaje.TipoMensaje;
 import servidor.ui.ServerLogger;
 
@@ -73,7 +73,8 @@ public class BaseDatos {
     public void enviarUsuarios(String id, TablaFlujos flujos) throws InterruptedException {
         controlador.request_read();
         try {
-            flujos.escribir(id, new MsjListaUsuarios(TipoMensaje.MSJ_CONF_LU, new ListaUsuarios(datos)));
+            ListaUsuarios lista = new ListaUsuarios(datos);
+            flujos.escribir(id, new MsjString(TipoMensaje.MSJ_CONF_LU, lista.toString()));
         } catch (Exception e) {
             ServerLogger.logError("Error al enviar la lista de usuarios al cliente '" + id + "'.");
         }
