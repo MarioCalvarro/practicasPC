@@ -1,13 +1,11 @@
 package concurrencia;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LockTicket {
     private AtomicInteger number, next;
 
-    public LockTicket(int N) {
+    public LockTicket() {
        number = new AtomicInteger(0);
        next = new AtomicInteger(0);
     }
@@ -19,7 +17,7 @@ public class LockTicket {
     }
 
     //@Override
-    public void releaseLock(int i) {
+    public void releaseLock() {
         int actual = number.get();
         number.compareAndSet(actual, actual +1);
     }

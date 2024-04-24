@@ -1,37 +1,51 @@
 package concurrencia;
 
-//TODO: Cambiar a reentrantlock
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class MonitorRW implements ControlAcceso {
     private volatile int nr = 0, nw = 0;
+    private final Lock lock = new ReentrantLock();
+    private final Condition condR = lock.newCondition();
+    private final Condition condW = lock.newCondition();
 
     @Override
-    public synchronized void request_read() throws InterruptedException {
+    public void request_read() throws InterruptedException {
+        lock.lock();
         while (nw > 0) {
-            wait();
+            condR.wait();
         }
         nr += 1;
+        lock.unlock();
     }
 
     @Override
-    public synchronized void release_read() {
+    public void release_read() throws InterruptedException {
+        lock.lock();
         nr -= 1;
         if (nr == 0) {
-            notifyAll();
+            condW.signal();
         }
+        lock.unlock();
     }
 
-
     @Override
-    public synchronized void request_write() throws InterruptedException {
+    public void request_write() throws InterruptedException {
+        lock.lock();
         while (nr > 0 || nw > 0) {
-            wait();
+            condW.wait();
         }
         nw += 1;
+        lock.unlock();
     }
 
     @Override
-    public synchronized void release_write() {
+    public void release_write() throws InterruptedException {
+        lock.lock();
         nw -= 1;
-        notifyAll();
+        condW.signal();
+        condR.signal();
+        lock.unlock();
     }
 }
