@@ -22,12 +22,14 @@ public class Cliente {
     private ControlOutput fOut;
     private OyenteServidor hc;
     private Usuario usuario;
+    private GestionFicheros ficheros;
     private Socket cs;
 
     public Cliente(String nombre) throws IOException, ClassNotFoundException {
         this.nombre = nombre;
         Set<String> ficherosUsuario = getFicherosUsuario(nombre);
         this.usuario = new Usuario(nombre, ficherosUsuario);
+        this.ficheros = new GestionFicheros(ficherosUsuario);
 
         cs = new Socket("localhost", Servidor.PORT_NUMBER);
         ObjectOutputStream output = new ObjectOutputStream(cs.getOutputStream());
@@ -36,7 +38,7 @@ public class Cliente {
         output.flush();
 
         fOut = new ControlOutput(output);
-        hc = new OyenteServidor(nombre, cs, fOut);
+        hc = new OyenteServidor(nombre, cs, fOut, ficherosUsuario);
         hc.start();
     }
 

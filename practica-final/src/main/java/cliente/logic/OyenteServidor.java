@@ -24,11 +24,14 @@ public class OyenteServidor extends Thread {
     private ControlOutput controlOutput;
     private List<Thread> emisorReceptor;
     private int numeroHiloReceptor;
+    private GestionFicheros ficheros;
 
-    public OyenteServidor(String nombre, Socket cs, ControlOutput controlOutput) throws IOException, ClassNotFoundException  {
+    public OyenteServidor(String nombre, Socket cs, ControlOutput controlOutput, GestionFicheros ficheros) throws IOException, ClassNotFoundException  {
         this.nombre = nombre;
         this.controlOutput = controlOutput;
         this.emisorReceptor = new ArrayList<>();
+        this.ficheros = ficheros;
+
         Mensaje msj = null;
         this.numeroHiloReceptor = NUMERO_HILO + 1;
 
@@ -83,10 +86,20 @@ public class OyenteServidor extends Thread {
                 break;
 
             case MSJ_PEDIR_FICHERO: // creamos nuevo hilo para controlar p2p
-
+                
                 //Esto bloqueará la llegada de nuevos mensajes hasta que el
                 //receptor se conecte. Simplemente se irán almacenando
                 String archivo = ((MsjString) msj).getContenido();
+                try {
+                    if (ficheros.comprobarExistencia(archivo)) {
+                        ClienteLogger.logWarning("Error al solicitar el archivo '" + archivo + "'. ¡El usuario ya lo posee!. Cancelando.");
+                        return;
+                    }
+                } catch (InterruptedException e) {
+                    ClienteLogger.logError("Error al comprobar si el usuario ya tiene el archivo '" + archivo + "'. Cancelando.");
+                    return;
+                }
+                //TODO: Cambiar a ip del emisor
                 String ip = "localhost";
                 try {
                     controlOutput.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PREPARADO_CS, archivo + " " + ip + " " + this.puerto));
@@ -114,7 +127,7 @@ public class OyenteServidor extends Thread {
                 //Start está en el constructor
                 HiloReceptor hiloReceptor;
                 try {
-                    hiloReceptor = new HiloReceptor(nombre, archivo2, ip2, puerto, controlOutput, numeroHiloReceptor);
+                    hiloReceptor = new HiloReceptor(nombre, archivo2, ip2, puerto, controlOutput, numeroHiloReceptor, ficheros);
                     emisorReceptor.add(hiloReceptor);
                     numeroHiloReceptor += 1;
                 } catch (IOException e) {
