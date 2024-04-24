@@ -169,7 +169,8 @@ class OyenteCliente extends Thread {
 
         try {
             baseDatos.desconexionUsuario(this.id);
-        } catch (InterruptedException e) {
+            flujos.cerrar(this.id);
+        } catch (InterruptedException | IOException e) {
             ServerLogger.logError("Error al desconectar el cliente '" + this.id + "'.");
         }
     }
@@ -177,7 +178,7 @@ class OyenteCliente extends Thread {
     private void solicitarFichero(String nombreFichero) throws InterruptedException {
         String nombreEmisor = baseDatos.getUsuarioConFichero(nombreFichero);
         if (nombreEmisor == null) {
-            ServerLogger.logError("El fichero '" + nombreFichero + "' no se encuentra en la base de datos. Enviando 'Fichero inexistente' al cliente '" + this.id + "'.");
+            ServerLogger.logError("El fichero '" + nombreFichero + "' no se encuentra disponible en la base de datos. Enviando 'Fichero inexistente' al cliente '" + this.id + "'.");
             flujos.escribir(id, new MsjString(TipoMensaje.MSJ_FICH_INEX, nombreFichero));
             return;
         }

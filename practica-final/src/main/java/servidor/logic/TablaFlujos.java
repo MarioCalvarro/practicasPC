@@ -34,4 +34,10 @@ public class TablaFlujos {
         }
         controladorOut.release_write();
     }
+
+    public void cerrar(String id) throws InterruptedException, IOException {
+        controladorOut.request_write();
+        datosOut.get(id).close();
+        controladorOut.release_write();
+    }
 }
