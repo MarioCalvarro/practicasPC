@@ -26,7 +26,8 @@ public class Cliente {
 
     public Cliente(String nombre) throws IOException, ClassNotFoundException {
         this.nombre = nombre;
-        this.usuario = new Usuario(nombre, getFicherosUsuario(nombre));
+        Set<String> ficherosUsuario = getFicherosUsuario(nombre);
+        this.usuario = new Usuario(nombre, ficherosUsuario);
 
         cs = new Socket("localhost", Servidor.PORT_NUMBER);
         ObjectOutputStream output = new ObjectOutputStream(cs.getOutputStream());

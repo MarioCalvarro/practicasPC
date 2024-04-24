@@ -59,7 +59,7 @@ public class OyenteServidor extends Thread {
     }
 
     private void gestionarPeticiones() {
-        Mensaje msj;
+        Mensaje msj = null;
         try {
             msj = (Mensaje) fIn.readObject();
         } catch (ClassNotFoundException | IOException e) {
