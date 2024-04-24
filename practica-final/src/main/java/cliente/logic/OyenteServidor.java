@@ -19,11 +19,11 @@ public class OyenteServidor extends Thread {
     private String nombre;
     private ServerSocket ss;
     private ObjectInputStream fIn;
-    private String puerto;
+    private int puerto;
     private ControlOutput controlOutput;
     private List<Thread> emisorReceptor;
     private int numeroHiloReceptor;
-    private GestionFicheros ficheros;
+    private GestionFicheros ficheros;       //Lo necesita el receptor
 
     public OyenteServidor(String nombre, Socket cs, ControlOutput controlOutput, GestionFicheros ficheros) throws IOException, ClassNotFoundException {
         this.nombre = nombre;
@@ -40,9 +40,9 @@ public class OyenteServidor extends Thread {
             ClienteLogger.logError("No se ha recibido el mensaje 'MSJ_CONF_CONEXION'.");
             throw new RuntimeException();
         }
-        int puertoCliente = Integer.parseInt(((MsjString) msj).getContenido());
-        ClienteLogger.log("Creando 'ServerSocket' en el puerto " + String.valueOf(puertoCliente));
-        ss = new ServerSocket(puertoCliente);
+        int puerto= Integer.parseInt(((MsjString) msj).getContenido());
+        ClienteLogger.log("Creando 'ServerSocket' en el puerto " + String.valueOf(puerto));
+        ss = new ServerSocket(puerto);
     }
 
     @Override
@@ -89,15 +89,6 @@ public class OyenteServidor extends Thread {
                 //Esto bloqueará la llegada de nuevos mensajes hasta que el
                 //receptor se conecte. Simplemente se irán almacenando
                 String archivo = ((MsjString) msj).getContenido();
-                try {
-                    if (ficheros.comprobarExistencia(archivo)) {
-                        ClienteLogger.logWarning("Error al solicitar el archivo '" + archivo + "'. ¡El usuario ya lo posee!. Cancelando.");
-                        return;
-                    }
-                } catch (InterruptedException e) {
-                    ClienteLogger.logError("Error al comprobar si el usuario ya tiene el archivo '" + archivo + "'. Cancelando.");
-                    return;
-                }
                 //TODO: Cambiar a ip del emisor
                 String ip = "localhost";
                 try {
@@ -132,7 +123,7 @@ public class OyenteServidor extends Thread {
                     emisorReceptor.add(hiloReceptor);
                     numeroHiloReceptor += 1;
                 } catch (IOException e) {
-                    ClienteLogger.logError("Error al conectar con el receptor del fichero '" + archivo2 + "'. Cancelando.");
+                    ClienteLogger.logError("Error al conectar con el emisor del fichero '" + archivo2 + "'. Cancelando.");
                 }
                 break;
 

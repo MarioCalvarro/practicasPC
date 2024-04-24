@@ -14,6 +14,8 @@ import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
 
+import cliente.ui.ClienteLogger;
+
 public class Cliente {
     protected static final String RUTA_FICHEROS = "./usuarios/";
     private static final int NUMERO_HILO = 0;
@@ -61,6 +63,17 @@ public class Cliente {
     }
 
     public void descargarInformacion(String fichero) throws IOException {
+        //Comprobamos que no lo tenga ya
+        try {
+            if (ficheros.comprobarExistencia(fichero)) {
+                ClienteLogger.logWarning("Error al solicitar el archivo '" + fichero + "'. ¡El usuario ya lo posee!. Cancelando.");
+                return;
+            }
+        } catch (InterruptedException e) {
+            ClienteLogger.logError("Error al comprobar si el usuario ya tiene el archivo '" + fichero + "'. Cancelando.");
+            return;
+        }
+
         fOut.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PEDIR_FICHERO, fichero));
     }
 
