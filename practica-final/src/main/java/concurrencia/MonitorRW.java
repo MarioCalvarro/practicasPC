@@ -5,10 +5,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MonitorRW implements ControlAcceso {
-    private volatile int nr = 0, nw = 0;
     private final Lock lock = new ReentrantLock();
     private final Condition condR = lock.newCondition();
     private final Condition condW = lock.newCondition();
+    private volatile int nr = 0, nw = 0;
 
     @Override
     public void request_read() throws InterruptedException {

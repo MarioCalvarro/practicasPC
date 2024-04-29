@@ -6,19 +6,20 @@ public class LockTicket {
     private AtomicInteger number, next;
 
     public LockTicket() {
-       number = new AtomicInteger(0);
-       next = new AtomicInteger(0);
+        number = new AtomicInteger(0);
+        next = new AtomicInteger(0);
     }
 
     //@Override
     public void takeLock() {
         int turno = next.getAndIncrement();
-        while(turno != number.get()){}        
+        while (turno != number.get()) {
+        }
     }
 
     //@Override
     public void releaseLock() {
         int actual = number.get();
-        number.compareAndSet(actual, actual +1);
+        number.compareAndSet(actual, actual + 1);
     }
 }

@@ -1,5 +1,6 @@
 package cliente.logic;
 
+import cliente.ui.ClienteLogger;
 import mensaje.MsjString;
 import mensaje.MsjUsuario;
 import mensaje.MsjVacio;
@@ -13,8 +14,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
-
-import cliente.ui.ClienteLogger;
 
 public class Cliente {
     protected static final String RUTA_FICHEROS = "./usuarios/";
