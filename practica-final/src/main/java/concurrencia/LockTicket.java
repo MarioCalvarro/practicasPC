@@ -3,6 +3,8 @@ package concurrencia;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LockTicket {
+    //TODO: Number no tiene que ser atomic integer
+    //Usar con desbordamiento
     private AtomicInteger number, next;
 
     public LockTicket() {

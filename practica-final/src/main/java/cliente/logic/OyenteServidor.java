@@ -80,6 +80,7 @@ public class OyenteServidor extends Thread {
 
             case MSJ_CONF_LU:
                 String res = ((MsjString) msj).getContenido();
+                //TODO: Control concurrencia consola
                 System.out.println("La información disponible en el sistema es:\n" + res);
                 break;
 

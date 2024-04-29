@@ -11,6 +11,7 @@ public class ServerLogger {
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_RESET = "\u001B[0m";
 
+    //Ya es thread-safe
     private static final Logger logger = Logger.getLogger(ServerLogger.class.getName());
     private static FileHandler fileHandler;
 
