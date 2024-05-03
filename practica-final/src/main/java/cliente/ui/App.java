@@ -20,6 +20,8 @@ public class App {
             c = new Cliente(nombre);
         } catch (ClassNotFoundException | IOException e) {
             ControlPrint.logError("Error al crear el cliente. Abortando.");
+            sc.close();
+            return;
         }
         while (!conexionTerminada) {
             int accion = pedirAcciones();
@@ -37,6 +39,7 @@ public class App {
         try {
             res = sc.nextInt();
         } catch (Exception e) {
+            sc.nextLine();
             return -1;
         }
         sc.nextLine();
