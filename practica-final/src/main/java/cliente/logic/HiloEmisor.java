@@ -68,7 +68,7 @@ public class HiloEmisor extends Thread {
             cerrarConexion();
             return;
         }
-        ClienteLogger.log("Enviado el fichero '" + archivo + "'.");
+        ControlPrint.log("Enviado el fichero '" + archivo + "'.");
 
         Mensaje msj;
         try {
