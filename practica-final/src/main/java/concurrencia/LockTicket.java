@@ -3,10 +3,10 @@ package concurrencia;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class LockTicket implements Lock {
-    //TODO
-    private int MAX_THREADS = 1000;
+    private int MAX_THREADS = 1000;     //Número máximo de threads que pueden
+                                        //solicitar el lock a la vez
     private AtomicInteger number;
-    private volatile int next;      //TODO: Volatile?
+    private volatile int next;
 
     public LockTicket() {
         number = new AtomicInteger(1);

@@ -1,42 +1,40 @@
 package cliente.logic;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.logging.Level;
 
+import concurrencia.Lock;
 import concurrencia.LockTicket;
 import servidor.ui.ServerLogger;
 
 public class ControlPrint {
-    private static final int NUM_LOCK = 3; //TODO
-    private LockTicket controladorOut;
-
+    private final Lock controladorOut;
 
     public ControlPrint() {
-        controladorOut = new LockTicket(NUM_LOCK);
+        controladorOut = new LockTicket();
     }
 
-    public void print(int id, String message) throws IOException {
-        controladorOut.takeLock(id);
+    public void print(String message) throws IOException {
+        controladorOut.takeLock();
         System.out.println(message); 
-        controladorOut.releaseLock(id);
+        controladorOut.releaseLock();
     }
-   public  void log(int id, String message) {
-        controladorOut.takeLock(id);
+
+    public void log(String message) {
+        controladorOut.takeLock();
         ServerLogger.log(message);
-        controladorOut.releaseLock(id);
+        controladorOut.releaseLock();
     }
 
-    public  void logWarning(int id, String message) {
-        controladorOut.takeLock(id);
+    public void logWarning(String message) {
+        controladorOut.takeLock();
         ServerLogger.logWarning(message);
-        controladorOut.releaseLock(id);
+        controladorOut.releaseLock();
     }
 
-    public  void logError(int id, String message) {
-        controladorOut.takeLock(id);            
+    public void logError(String message) {
+        controladorOut.takeLock();            
         ServerLogger.logError(message);
-        controladorOut.releaseLock(id);
+        controladorOut.releaseLock();
     } 
 }
 
