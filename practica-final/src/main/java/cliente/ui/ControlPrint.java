@@ -1,7 +1,5 @@
 package cliente.ui;
 
-import java.io.IOException;
-
 import concurrencia.Lock;
 import concurrencia.LockTicket;
 import servidor.ui.ServerLogger;
@@ -9,7 +7,7 @@ import servidor.ui.ServerLogger;
 public class ControlPrint {
     private static final Lock controladorOut = new LockTicket();
 
-    public static void print(String message) throws IOException {
+    public static void print(String message) {
         controladorOut.takeLock();
         System.out.println(message); 
         controladorOut.releaseLock();
