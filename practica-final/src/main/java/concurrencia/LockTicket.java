@@ -2,26 +2,32 @@ package concurrencia;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LockTicket {
-    //TODO: Number no tiene que ser atomic integer
-    //Usar con desbordamiento
-    private AtomicInteger number, next;
+public class LockTicket implements Lock {
+    //TODO
+    private int MAX_THREADS = 100;
+    private AtomicInteger number;
+    private volatile int next;      //TODO: Volatile?
 
     public LockTicket() {
-        number = new AtomicInteger(0);
-        next = new AtomicInteger(0);
+        number = new AtomicInteger(1);
+        next = 1;
     }
 
-    //@Override
+    @Override
     public void takeLock() {
-        int turno = next.getAndIncrement();
-        while (turno != number.get()) {
-        }
+          Integer turno = number.getAndIncrement();
+          if (turno == MAX_THREADS) {           //Resta el que ha llegado al "overflow"
+              number.addAndGet(-MAX_THREADS);
+              //TODO: Restar n a turn?
+          }
+          else if (turno > MAX_THREADS) {       //El resto que se han pasado solo se actualizan a sí mismos
+              turno -= MAX_THREADS;
+          }
+          while (turno != next) {}
     }
 
-    //@Override
+    @Override
     public void releaseLock() {
-        int actual = number.get();
-        number.compareAndSet(actual, actual + 1);
+        next = next % MAX_THREADS + 1;
     }
 }
