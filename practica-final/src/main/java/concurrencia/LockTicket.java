@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class LockTicket implements Lock {
     //TODO
-    private int MAX_THREADS = 100;
+    private int MAX_THREADS = 1000;
     private AtomicInteger number;
     private volatile int next;      //TODO: Volatile?
 
