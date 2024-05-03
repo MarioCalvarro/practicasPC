@@ -16,8 +16,7 @@ class OyenteCliente extends Thread {
     private BaseDatos baseDatos;
     private TablaFlujos flujos;
     private TablaSolicitudes solicitudes;
-    private ObjectInputStream fIn;      //El flujo de entrada no estará
-    //compartido
+    private ObjectInputStream fIn;      //El flujo de entrada no estará compartido
     private ObjectOutputStream fOut;
     private String id;
     private int puertoNuevoCliente;

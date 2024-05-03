@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Servidor {
-    //public static final int MAX_CONCURRENT_USERS = 20;
     public static final int PORT_NUMBER = 2024;
     private static final String EXIT_WORD = "exit";
 
