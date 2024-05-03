@@ -1,6 +1,7 @@
 package cliente.logic;
 
 import cliente.ui.ClienteLogger;
+import cliente.ui.ControlPrint;
 import mensaje.Mensaje;
 import mensaje.MsjVacio;
 import mensaje.TipoMensaje;
@@ -27,7 +28,7 @@ public class HiloEmisor extends Thread {
             fOut = new ObjectOutputStream(cs.getOutputStream());
             fIn = new ObjectInputStream(cs.getInputStream());
         } catch (IOException e) {
-            ClienteLogger.logError("Error al abrir los flujos para emitir el fichero '" + archivo + "'.");
+            ControlPrint.logError("Error al abrir los flujos para emitir el fichero '" + archivo + "'.");
             cerrarConexion();
             return;
         }
@@ -35,7 +36,7 @@ public class HiloEmisor extends Thread {
         try {
             fileIn = new FileInputStream(Cliente.RUTA_FICHEROS + archivo);
         } catch (FileNotFoundException e) {
-            ClienteLogger.logError("Error al abrir el archivo. ");
+            ControlPrint.logError("Error al abrir el archivo. ");
             cerrarConexion();
             return;
         }
@@ -44,7 +45,7 @@ public class HiloEmisor extends Thread {
             fOut.writeObject(new MsjVacio(TipoMensaje.MSJ_INICIO_EMISION_FICHERO));
             fOut.flush();
         } catch (IOException e) {
-            ClienteLogger.logError("Error al escribir el mensaje de inicio de emisión del fichero '" + archivo + "'.");
+            ControlPrint.logError("Error al escribir el mensaje de inicio de emisión del fichero '" + archivo + "'.");
             cerrarConexion();
             return;
         }
@@ -63,7 +64,7 @@ public class HiloEmisor extends Thread {
             cs.shutdownOutput();
             fileIn.close();
         } catch (IOException e) {
-            ClienteLogger.logError("Error al enviar un tramo del fichero '" + archivo + "'.");
+            ControlPrint.logError("Error al enviar un tramo del fichero '" + archivo + "'.");
             cerrarConexion();
             return;
         }
@@ -74,18 +75,18 @@ public class HiloEmisor extends Thread {
             //Mensaje de fin de cierre de emisión
             msj = (MsjVacio) fIn.readObject();
         } catch (ClassNotFoundException | IOException e) {
-            ClienteLogger.logError("Error al recibir el mensaje de cierre de conexión con el receptor del fichero '" + archivo + "'.");
+            ControlPrint.logError("Error al recibir el mensaje de cierre de conexión con el receptor del fichero '" + archivo + "'.");
             cerrarConexion();
             return;
         }
         if (msj.getTipo() != TipoMensaje.MSJ_CERRAR_CONEXION) {
-            ClienteLogger.logError("El receptor no ha indicado el cierre de la conexión.");
+            ControlPrint.logError("El receptor no ha indicado el cierre de la conexión.");
         }
         try {
             cs.close();
             fIn.close();
         } catch (IOException e) {
-            ClienteLogger.logError("Error al cerrar el thread de emisión del fichero '" + archivo + "'.");
+            ControlPrint.logError("Error al cerrar el thread de emisión del fichero '" + archivo + "'.");
         }
     }
 
@@ -96,7 +97,7 @@ public class HiloEmisor extends Thread {
             fOut.close();
             fIn.close();
         } catch (IOException e) {
-            ClienteLogger.logError("Error al cerrar el thread de emisión del fichero '" + archivo + "'.");
+            ControlPrint.logError("Error al cerrar el thread de emisión del fichero '" + archivo + "'.");
         }
     }
 }

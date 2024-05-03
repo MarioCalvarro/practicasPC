@@ -1,6 +1,7 @@
 package cliente.logic;
 
 import cliente.ui.ClienteLogger;
+import cliente.ui.ControlPrint;
 import mensaje.Mensaje;
 import mensaje.MsjString;
 import mensaje.TipoMensaje;
@@ -37,11 +38,11 @@ public class OyenteServidor extends Thread {
         fIn = new ObjectInputStream(cs.getInputStream());
         msj = (Mensaje) fIn.readObject();
         if (msj.getTipo() != TipoMensaje.MSJ_CONF_CONEXION) {
-            ClienteLogger.logError("No se ha recibido el mensaje 'MSJ_CONF_CONEXION'.");
+            ControlPrint.logError("No se ha recibido el mensaje 'MSJ_CONF_CONEXION'.");
             throw new RuntimeException();
         }
         this.puerto = Integer.parseInt(((MsjString) msj).getContenido());
-        ClienteLogger.log("Creando 'ServerSocket' en el puerto " + String.valueOf(puerto));
+        ControlPrint.log("Creando 'ServerSocket' en el puerto " + String.valueOf(puerto));
         ss = new ServerSocket(puerto);
     }
 
@@ -55,7 +56,7 @@ public class OyenteServidor extends Thread {
             try {
                 t.join();
             } catch (InterruptedException e) {
-                ClienteLogger.logError("Error al cerrar uno de los hilos de descarga/envio de archivos del cliente '" + this.nombre + "'.");
+                ControlPrint.logError("Error al cerrar uno de los hilos de descarga/envio de archivos del cliente '" + this.nombre + "'.");
             }
         }
     }
@@ -65,7 +66,7 @@ public class OyenteServidor extends Thread {
         try {
             msj = (Mensaje) fIn.readObject();
         } catch (ClassNotFoundException e) {
-            ClienteLogger.logError("Error al recibir un mensaje del servidor. Cerrando conexión.");
+            ControlPrint.logError("Error al recibir un mensaje del servidor. Cerrando conexión.");
             interrupt();
             return;
         } catch (IOException e) {
@@ -75,7 +76,7 @@ public class OyenteServidor extends Thread {
 
         switch (msj.getTipo()) {
             case MSJ_CONF_CONEXION:
-                ClienteLogger.log("Conectado el cliente " + nombre);
+                ControlPrint.log("Conectado el cliente " + nombre);
                 break;
 
             case MSJ_CONF_LU:
@@ -85,7 +86,7 @@ public class OyenteServidor extends Thread {
                 break;
 
             case MSJ_FICH_INEX:
-                ClienteLogger.logError("El fichero " + ((MsjString) msj).getContenido().toString() + " no está disponible.");
+                ControlPrint.logError("El fichero " + ((MsjString) msj).getContenido().toString() + " no está disponible.");
                 break;
 
             case MSJ_PEDIR_FICHERO: // creamos nuevo hilo para controlar p2p
@@ -98,7 +99,7 @@ public class OyenteServidor extends Thread {
                 try {
                     controlOutput.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PREPARADO_CS, archivo + " " + ip + " " + this.puerto));
                 } catch (IOException e) {
-                    ClienteLogger.logError("Error al enviar un mensaje 'MSJ_PREPARADO_CS' para el archivo '" + archivo + "'. Cerrando conexión.");
+                    ControlPrint.logError("Error al enviar un mensaje 'MSJ_PREPARADO_CS' para el archivo '" + archivo + "'. Cerrando conexión.");
                     interrupt();
                     return;
                 }
@@ -110,7 +111,7 @@ public class OyenteServidor extends Thread {
                     HiloEmisor hiloEmisor = new HiloEmisor(nombre + "/" + archivo, sEmisor);
                     emisorReceptor.add(hiloEmisor);
                 } catch (IOException e) {
-                    ClienteLogger.logError("Error al conectar con el receptor del fichero '" + archivo + "'. Cancelando.");
+                    ControlPrint.logError("Error al conectar con el receptor del fichero '" + archivo + "'. Cancelando.");
                 }
                 break;
 
@@ -127,12 +128,12 @@ public class OyenteServidor extends Thread {
                     emisorReceptor.add(hiloReceptor);
                     numeroHiloReceptor += 1;
                 } catch (IOException e) {
-                    ClienteLogger.logError("Error al conectar con el emisor del fichero '" + archivo2 + "'. Cancelando.");
+                    ControlPrint.logError("Error al conectar con el emisor del fichero '" + archivo2 + "'. Cancelando.");
                 }
                 break;
 
             default:
-                ClienteLogger.logError("Error al recibir un mensaje del servidor. Cerrando conexión.");
+                ControlPrint.logError("Error al recibir un mensaje del servidor. Cerrando conexión.");
                 interrupt();
         }
     }

@@ -1,6 +1,7 @@
 package cliente.logic;
 
 import cliente.ui.ClienteLogger;
+import cliente.ui.ControlPrint;
 import mensaje.MsjString;
 import mensaje.MsjUsuario;
 import mensaje.MsjVacio;
@@ -65,11 +66,11 @@ public class Cliente {
         //Comprobamos que no lo tenga ya
         try {
             if (ficheros.comprobarExistencia(fichero)) {
-                ClienteLogger.logWarning("Error al solicitar el archivo '" + fichero + "'. ¡El usuario ya lo posee!. Cancelando.");
+                ControlPrint.logWarning("Error al solicitar el archivo '" + fichero + "'. ¡El usuario ya lo posee!. Cancelando.");
                 return;
             }
         } catch (InterruptedException e) {
-            ClienteLogger.logError("Error al comprobar si el usuario ya tiene el archivo '" + fichero + "'. Cancelando.");
+            ControlPrint.logError("Error al comprobar si el usuario ya tiene el archivo '" + fichero + "'. Cancelando.");
             return;
         }
 

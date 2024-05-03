@@ -1,6 +1,7 @@
 package cliente.logic;
 
 import cliente.ui.ClienteLogger;
+import cliente.ui.ControlPrint;
 import mensaje.Mensaje;
 import mensaje.MsjString;
 import mensaje.MsjVacio;
@@ -42,12 +43,12 @@ public class HiloReceptor extends Thread {
         try {
             Mensaje inicio = (MsjVacio) fIn.readObject();
             if (inicio.getTipo() != TipoMensaje.MSJ_INICIO_EMISION_FICHERO) {
-                ClienteLogger.logError("Error al recibir el mensaje de inicio de emisión del fichero '" + archivo + "'.");
+                ControlPrint.logError("Error al recibir el mensaje de inicio de emisión del fichero '" + archivo + "'.");
                 cerrarConexion();
                 return;
             }
         } catch (ClassNotFoundException | IOException e) {
-            ClienteLogger.logError("Error al leer el mensaje de inicio de emisión de fichero '" + archivo + "'.");
+            ControlPrint.logError("Error al leer el mensaje de inicio de emisión de fichero '" + archivo + "'.");
             cerrarConexion();
             return;
         }
@@ -60,17 +61,17 @@ public class HiloReceptor extends Thread {
                 fileOutputStream.write(buffer, 0, bytesRead);
             }
         } catch (IOException e) {
-            ClienteLogger.logError("Error al recibir un tramo del fichero '" + archivo + "'.");
+            ControlPrint.logError("Error al recibir un tramo del fichero '" + archivo + "'.");
             cerrarConexion();
             return;
         }
 
         try {
-            ClienteLogger.log("Recibido el fichero '" + archivo + "'.");
+            ControlPrint.log("Recibido el fichero '" + archivo + "'.");
             fOut.writeObject(new MsjVacio(TipoMensaje.MSJ_CERRAR_CONEXION));
             fOut.flush();
         } catch (IOException e) {
-            ClienteLogger.logError("Error al escribir el mensaje de cierre de conexión.");
+            ControlPrint.logError("Error al escribir el mensaje de cierre de conexión.");
         }
 
         try {
@@ -78,13 +79,13 @@ public class HiloReceptor extends Thread {
                 gestion.addFichero(archivo);
             }
         } catch (InterruptedException e) {
-            ClienteLogger.logError("Error al añadir el fichero.");
+            ControlPrint.logError("Error al añadir el fichero.");
         }
 
         try {
             controlOutput.escribir(numHilo, new MsjString(TipoMensaje.MSJ_FIN_EMISION_FICHERO, archivo));
         } catch (IOException e) {
-            ClienteLogger.logError("Error al escribir el mensaje de fin de emisión del fichero '" + archivo + "'.");
+            ControlPrint.logError("Error al escribir el mensaje de fin de emisión del fichero '" + archivo + "'.");
             cerrarConexion();
             return;
         }
@@ -98,7 +99,7 @@ public class HiloReceptor extends Thread {
             fIn.close();
             fileOutputStream.close();
         } catch (IOException e) {
-            ClienteLogger.logError("Error al cerrar el thread de recepción del fichero '" + archivo + "'.");
+            ControlPrint.logError("Error al cerrar el thread de recepción del fichero '" + archivo + "'.");
         }
     }
 }
