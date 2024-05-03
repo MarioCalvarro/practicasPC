@@ -81,8 +81,7 @@ public class OyenteServidor extends Thread {
 
             case MSJ_CONF_LU:
                 String res = ((MsjString) msj).getContenido();
-                //TODO: Control concurrencia consola
-                System.out.println("La información disponible en el sistema es:\n" + res);
+                ControlPrint.print("La información disponible en el sistema es:\n" + res);
                 break;
 
             case MSJ_FICH_INEX:
@@ -94,8 +93,7 @@ public class OyenteServidor extends Thread {
                 //Esto bloqueará la llegada de nuevos mensajes hasta que el
                 //receptor se conecte. Simplemente se irán almacenando
                 String archivo = ((MsjString) msj).getContenido();
-                //TODO: Cambiar a ip del emisor
-                String ip = "localhost";
+                String ip = "localhost";        //Si quisiesemos hacerlo más realista habría que pasar la ip de verdad
                 try {
                     controlOutput.escribir(NUMERO_HILO, new MsjString(TipoMensaje.MSJ_PREPARADO_CS, archivo + " " + ip + " " + this.puerto));
                 } catch (IOException e) {

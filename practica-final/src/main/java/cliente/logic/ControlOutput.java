@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 public class ControlOutput {
-    private static final int NUM_LOCK = 3000; //TODO
     private LockTicket controladorOut;
     private ObjectOutputStream datosOut;
 
@@ -16,7 +15,6 @@ public class ControlOutput {
         controladorOut = new LockTicket();
     }
 
-    //TODO: Lock
     public void escribir(int id, Object obj) throws IOException {
         controladorOut.takeLock();
         datosOut.writeObject(obj);

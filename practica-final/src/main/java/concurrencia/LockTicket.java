@@ -18,7 +18,6 @@ public class LockTicket implements Lock {
           Integer turno = number.getAndIncrement();
           if (turno == MAX_THREADS) {           //Resta el que ha llegado al "overflow"
               number.addAndGet(-MAX_THREADS);
-              //TODO: Restar n a turn?
           }
           else if (turno > MAX_THREADS) {       //El resto que se han pasado solo se actualizan a sí mismos
               turno -= MAX_THREADS;
