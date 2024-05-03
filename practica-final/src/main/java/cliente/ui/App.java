@@ -13,13 +13,13 @@ public class App {
 
     public static void main(String[] args) {
         sc = new Scanner(System.in);
-        System.out.println("Bienvenido. Introduzca el nombre de usuario: ");
+        ControlPrint.print("Bienvenido. Introduzca el nombre de usuario: ");
         String nombre = sc.next();
         sc.nextLine();
         try {
             c = new Cliente(nombre);
         } catch (ClassNotFoundException | IOException e) {
-            ClienteLogger.logError("Error al crear el cliente. Abortando.");
+            ControlPrint.logError("Error al crear el cliente. Abortando.");
         }
         while (!conexionTerminada) {
             int accion = pedirAcciones();
@@ -29,11 +29,16 @@ public class App {
     }
 
     private static int pedirAcciones() {
-        System.out.println("Elija la acción que desea hacer: ");
-        System.out.println("1. Consultar información disponible en el sistema.");
-        System.out.println("2. Descargar información deseada.");
-        System.out.println("3. Terminar sesión.");
-        int res = sc.nextInt();
+        ControlPrint.print("Elija la acción que desea hacer: ");
+        ControlPrint.print("1. Consultar información disponible en el sistema.");
+        ControlPrint.print("2. Descargar información deseada.");
+        ControlPrint.print("3. Terminar sesión.");
+        int res;
+        try {
+            res = sc.nextInt();
+        } catch (Exception e) {
+            return -1;
+        }
         sc.nextLine();
         return res;
     }
@@ -44,7 +49,7 @@ public class App {
                 try {
                     c.consultarInformacion();
                 } catch (IOException e) {
-                    ClienteLogger.logError("Error al consultar la lista de usuarios.");
+                    ControlPrint.logError("Error al consultar la lista de usuarios.");
                 }
                 break;
             case 2:
@@ -53,19 +58,19 @@ public class App {
                 try {
                     c.descargarInformacion(fichero);
                 } catch (IOException e) {
-                    ClienteLogger.logError("Error al descargar un fichero.");
+                    ControlPrint.logError("Error al descargar un fichero.");
                 }
                 break;
             case 3:
                 try {
                     c.finalizarConexion();
                 } catch (IOException | InterruptedException e) {
-                    ClienteLogger.logError("Error al finalizar la conexión con el servidor.");
+                    ControlPrint.logError("Error al finalizar la conexión con el servidor.");
                 }
                 conexionTerminada = true;
                 break;
             default:
-                System.err.println("El número '" + num + "' no es válido.");
+                ControlPrint.logError("La acción introducida no es válida.");
         }
     }
 }
