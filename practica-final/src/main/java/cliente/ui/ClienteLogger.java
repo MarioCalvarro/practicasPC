@@ -8,7 +8,6 @@ public class ClienteLogger {
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_RESET = "\u001B[0m";
 
-    //Ya es thread-safe
     private static final Logger logger = Logger.getLogger(ClienteLogger.class.getName());
 
     public static void log(String message) {
