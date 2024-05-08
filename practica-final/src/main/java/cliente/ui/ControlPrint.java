@@ -2,7 +2,6 @@ package cliente.ui;
 
 import concurrencia.Lock;
 import concurrencia.LockTicket;
-import servidor.ui.ServerLogger;
 
 public class ControlPrint {
     private static final Lock controladorOut = new LockTicket();
